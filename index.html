@@ -7,19 +7,42 @@
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <header>
-    <h1>SalonTech</h1>
+  <header class="app-header">
+    <div class="container navbar">
+      <a class="brand" href="#inicio">
+        <span>Salon<span class="gradient-text">Tech</span></span>
+      </a>
+
+      <button class="mobile-menu-btn" id="mobileMenuBtn" type="button"
+        aria-controls="navLinks" aria-expanded="false" aria-label="Abrir menu">☰</button>
+
+      <nav>
+        <ul class="nav-links" id="navLinks">
+          <li><a href="#servicos">Serviços</a></li>
+          <li><a href="#contato">Contato</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-controls">
+        <button class="nav-logout" type="button">Sair</button>
+      </div>
+    </div>
   </header>
 
-  <main>
-    <section>
-      <h2>Gestão do salão</h2>
-      <p>Sistema interno para organizar clientes, agenda, equipe e serviços.</p>
+  <main id="conteudo">
+    <section id="inicio">
+      <div class="container">
+        <h1>Gestão do salão sem complicação</h1>
+        <p>Sistema interno para organizar clientes, agenda, equipe e serviços.</p>
+      </div>
     </section>
   </main>
 
-  <footer>
-    <p>SalonTech &copy; 2026</p>
+  <footer class="site-footer">
+    <div class="container">
+      <strong>SalonTech</strong>
+      <p>Sistema interno para cadastro, agenda e catálogo do salão.</p>
+    </div>
   </footer>
 </body>
 </html>
