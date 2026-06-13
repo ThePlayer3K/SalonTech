@@ -1,0 +1,60 @@
+:root {
+    --bg: #fbf7f7;
+    --surface: #ffffff;
+    --text: #25111c;
+    --muted: #624958;
+    --primary: #a50f1c;
+    --primary-dark: #7d0b15;
+    --primary-soft: #f8e8ea;
+    --border: #ead7db;
+    --radius: 8px;
+    --container: 1180px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+    color: var(--text);
+    background: var(--bg);
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+    line-height: 1.6;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button, input, select, textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.container {
+    width: min(calc(100% - 40px), var(--container));
+    margin: 0 auto;
+}
+
+h1 { font-size: clamp(2rem, 6vw, 3.5rem); }
+h2 { font-size: clamp(1.5rem, 4vw, 2rem); }
+
+section {
+    padding: 60px 0;
+}
