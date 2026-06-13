@@ -9,9 +9,7 @@
 <body>
   <header class="app-header">
     <div class="container navbar">
-      <a class="brand" href="#inicio">
-        <span>Salon<span class="gradient-text">Tech</span></span>
-      </a>
+      <a class="brand" href="#inicio"><span>Salon<span class="gradient-text">Tech</span></span></a>
       <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" aria-expanded="false">☰</button>
       <nav>
         <ul class="nav-links" id="navLinks">
@@ -27,7 +25,6 @@
 
   <main id="conteudo">
     <section class="hero" id="inicio">
-      <div class="hero-overlay"></div>
       <div class="container hero-content">
         <span class="eyebrow">Sistema interno | SalonTech</span>
         <h1>Gestão do salão sem complicação</h1>
@@ -41,21 +38,55 @@
 
     <section class="workflow-band">
       <div class="container workflow-grid">
-        <article>
-          <span>01</span>
-          <strong>Cadastre clientes</strong>
-          <p>Mantenha contatos e dados básicos organizados para agilizar o atendimento.</p>
-        </article>
-        <article>
-          <span>02</span>
-          <strong>Escolha serviços</strong>
-          <p>Use o catálogo interno para consultar valores, duração e categoria.</p>
-        </article>
-        <article>
-          <span>03</span>
-          <strong>Monte a agenda</strong>
-          <p>Registre horários e acompanhe os próximos atendimentos no painel.</p>
-        </article>
+        <article><span>01</span><strong>Cadastre clientes</strong><p>Mantenha contatos e dados básicos organizados.</p></article>
+        <article><span>02</span><strong>Escolha serviços</strong><p>Consulte valores, duração e categoria no catálogo.</p></article>
+        <article><span>03</span><strong>Monte a agenda</strong><p>Registre horários e acompanhe os atendimentos.</p></article>
+      </div>
+    </section>
+
+    <section id="servicos">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <span class="section-kicker">Catálogo interno</span>
+            <h2>Serviços disponíveis</h2>
+          </div>
+          <p>Consulte os serviços e envie o item escolhido diretamente para o cadastro da agenda.</p>
+        </div>
+
+        <form class="filters" id="filtersForm">
+          <div class="field">
+            <label for="searchInput">Buscar serviço</label>
+            <input id="searchInput" type="search" placeholder="Ex: corte, pele ou unhas" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="categoryFilter">Categoria</label>
+            <select id="categoryFilter">
+              <option value="todos">Todas</option>
+              <option value="Cabelo">Cabelo</option>
+              <option value="Unhas">Unhas</option>
+              <option value="Estetica">Estética</option>
+              <option value="Sobrancelha">Sobrancelha</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="priceFilter">Preço</label>
+            <select id="priceFilter">
+              <option value="todos">Todos</option>
+              <option value="ate40">Até R$ 40</option>
+              <option value="41a80">R$ 41 a R$ 80</option>
+              <option value="acima80">Acima de R$ 80</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" type="submit">Filtrar</button>
+          <button class="btn btn-ghost" type="button" id="clearFiltersBtn">Limpar</button>
+        </form>
+
+        <div class="catalog-toolbar">
+          <span class="results-count" id="resultsCount">0 serviços</span>
+        </div>
+
+        <div class="service-grid" id="servicesGrid"></div>
       </div>
     </section>
   </main>
@@ -63,11 +94,9 @@
   <footer class="site-footer">
     <div class="container footer-grid">
       <div class="footer-brand">
-        <div>
-          <strong>SalonTech</strong>
-          <p>Sistema interno para cadastro, agenda e catálogo do salão.</p>
-        </div>
+        <div><strong>SalonTech</strong><p>Sistema interno para cadastro, agenda e catálogo do salão.</p></div>
       </div>
+      <div><a href="#inicio">Topo</a></div>
     </div>
   </footer>
 </body>
