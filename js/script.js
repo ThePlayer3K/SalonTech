@@ -33,8 +33,64 @@ const adminModules = {
 };
 const tableByStoreKey = { clients:"cliente", appointments:"agendamento", services:"servico", team:"funcionario", products:"produto", expenses:"despesa", paymentMethods:"forma_pagamento" };
 
+const professionalModuleOrder = ["products","services","appointments"];
 let currentAdminModule = "clients";
 let editingRecordId = null;
+
+// ─── Password toggle ──────────────────────────────────────────────────────────
+
+function setupPasswordToggle() {
+    document.addEventListener("click", (event) => {
+        const btn = event.target.closest(".password-toggle"); if (!btn) return;
+        const wrapper = btn.closest(".password-wrapper"); if (!wrapper) return;
+        const input = wrapper.querySelector("input[type=password], input[type=text]"); if (!input) return;
+        const isText = input.type === "text";
+        input.type = isText ? "password" : "text";
+        wrapper.querySelector(".eye-show").hidden = !isText;
+        wrapper.querySelector(".eye-hide").hidden = isText;
+        btn.setAttribute("aria-label", isText ? "Mostrar senha" : "Ocultar senha");
+    });
+}
+
+// ─── Role-based access ────────────────────────────────────────────────────────
+
+function isProfessionalUser() {
+    const session = storage.get("salonTechSession", null); if (!session) return false;
+    const user = appStore.users.find((u) => u.id === session.userId); return user?.role === ROLE_PROFESSIONAL;
+}
+
+function getCurrentProfessionalId() {
+    const session = storage.get("salonTechSession", null); if (!session) return "";
+    const user = appStore.users.find((u) => u.id === session.userId); return user?.profissionalId || "";
+}
+
+function getVisibleModuleOrder() { return isProfessionalUser() ? professionalModuleOrder : moduleOrder; }
+
+function getVisibleRecords(storeKey) {
+    const records = appStore[storeKey] || [];
+    if (!isProfessionalUser()) return records;
+    const profId = getCurrentProfessionalId();
+    if (storeKey === "services") return records.filter((r) => r.profissionalId === profId);
+    if (storeKey === "appointments") return records.filter((r) => r.profissionalId === profId);
+    return records;
+}
+
+function canAccessModule(key) { return getVisibleModuleOrder().includes(key); }
+
+function applyAccessProfile() {
+    if (!canAccessModule(currentAdminModule)) { currentAdminModule = getVisibleModuleOrder()[0]; editingRecordId = null; }
+    renderModuleNavigation(currentAdminModule);
+    renderAdminTabs(); renderAdminModule();
+}
+
+function renderModuleNavigation(currentKey) {
+    const visible = new Set(getVisibleModuleOrder());
+    document.querySelectorAll("[data-open-module]").forEach((el) => {
+        const key = el.dataset.openModule; const li = el.closest("li");
+        if (li) li.hidden = !visible.has(key);
+        el.classList.toggle("active", key === currentKey);
+    });
+}
 
 // ─── UX: splash, theme, offline, toast, scroll progress, navigation ──────────
 
@@ -74,7 +130,7 @@ function setupNavigation(openModuleFn) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-    setupSplash(); setupTheme(); setupOfflineHandler(); updateScrollProgress(); setupNavigation(openAdminModule);
+    setupPasswordToggle(); setupSplash(); setupTheme(); setupOfflineHandler(); updateScrollProgress(); setupNavigation(openAdminModule);
     try {
         await loadStoreFromSupabase();
         if (appStore.expenses.some((e) => /^Comissao agendamento #\d+$/.test(e.nome))) {
@@ -221,7 +277,7 @@ function cancelAdminEdit() { editingRecordId=null; $("#adminEntityForm")?.reset(
 
 function renderAdminTabs() {
     const tabs=$("#adminTabs"); if (!tabs) return;
-    tabs.innerHTML=moduleOrder.map((key)=>{ const mod=adminModules[key]; return `<button type="button" class="${key===currentAdminModule?"active":""}" data-admin-module="${key}" role="tab" aria-selected="${key===currentAdminModule}">${mod.label}</button>`; }).join("");
+    tabs.innerHTML=getVisibleModuleOrder().map((key)=>{ const mod=adminModules[key]; return `<button type="button" class="${key===currentAdminModule?"active":""}" data-admin-module="${key}" role="tab" aria-selected="${key===currentAdminModule}">${mod.label}</button>`; }).join("");
     tabs.querySelectorAll("[data-admin-module]").forEach((btn)=>btn.addEventListener("click",()=>openAdminModule(btn.dataset.adminModule)));
 }
 
@@ -319,7 +375,7 @@ async function handleResetPassword(event) { event.preventDefault(); const passwo
 async function startGoogleOAuth() { const { error }=await supabase.auth.signInWithOAuth({ provider:"google",options:{ redirectTo:`${DEFAULT_ORIGIN}/` } }); if (error) setAuthStatus(error.message,"error"); }
 async function handleLogout() { await supabase.auth.signOut(); lockApp(); }
 function lockApp() { localStorage.removeItem("salonTechSession"); document.body.classList.add("auth-locked"); }
-function unlockApp(showMsg) { document.body.classList.remove("auth-locked"); setupAdmin(); setupServices(); if (showMsg) showToast("Bem-vindo ao SalonTech!", "success"); }
+function unlockApp(showMsg) { document.body.classList.remove("auth-locked"); applyAccessProfile(); setupServices(); if (showMsg) showToast("Bem-vindo ao SalonTech!", "success"); }
 function setAuthMode(mode) { document.querySelectorAll("[data-auth-mode]").forEach((b)=>{ b.classList.toggle("active",b.dataset.authMode===mode); b.setAttribute("aria-selected",String(b.dataset.authMode===mode)); }); document.querySelectorAll("[data-auth-form]").forEach((f)=>{ f.hidden=f.dataset.authForm!==mode; }); setAuthStatus(""); }
 function setResetMode(mode) { document.querySelectorAll("[data-auth-mode]").forEach((b)=>b.classList.toggle("active",b.dataset.authMode==="login"&&mode==="login")); document.querySelectorAll("[data-auth-form]").forEach((f)=>{ f.hidden=f.dataset.authForm!==mode; }); setAuthStatus(""); }
 function setAuthStatus(msg,type="") { const s=$("#authStatus"); if(!s) return; s.textContent=msg; s.className=`auth-status ${type}`.trim(); }
