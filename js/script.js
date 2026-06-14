@@ -35,6 +35,58 @@ const tableByStoreKey = { clients:"cliente", appointments:"agendamento", service
 
 let currentAdminModule = "clients";
 let editingRecordId = null;
+let selectedRating = 0;
+
+function buildStars(rating) { const n=Math.max(0,Math.min(5,Math.round(Number(rating||0)))); return "★".repeat(n)+"☆".repeat(5-n); }
+function createId(prefix) { return `${prefix||"id"}_${Date.now()}_${Math.random().toString(36).slice(2,7)}`; }
+function saveStore(store) { appStore=store; storage.set(STORAGE_KEY,{ reviews:store.reviews||[], contactRequests:store.contactRequests||[] }); }
+
+// ─── Reviews ─────────────────────────────────────────────────────────────────
+
+function setupReviews() {
+    if (!$("#reviewForm") && !$("#reviewsList")) return;
+    renderRatingButtons(); renderReviews();
+    $("#reviewForm")?.addEventListener("submit", (event) => {
+        event.preventDefault();
+        if (!selectedRating) { showToast("Selecione uma nota para enviar a avaliação."); return; }
+        const review = { id:createId("rev"), name:$("#reviewName").value.trim(), service:$("#reviewService").value, rating:selectedRating, comment:$("#reviewComment").value.trim(), createdAt:new Date().toISOString() };
+        const store = { ...appStore, reviews:[review, ...appStore.reviews] };
+        saveStore(store); event.target.reset(); setRating(0); renderReviews();
+        showToast("Avaliação registrada. Obrigado!");
+    });
+}
+
+function renderRatingButtons() {
+    const group=$("#ratingButtons"); if (!group) return;
+    group.innerHTML=[1,2,3,4,5].map((n)=>`<button class="star-btn" type="button" role="radio" aria-checked="false" aria-label="${n} estrelas" data-rating="${n}">★</button>`).join("");
+    group.querySelectorAll("[data-rating]").forEach((btn)=>btn.addEventListener("click",()=>setRating(Number(btn.dataset.rating))));
+}
+
+function setRating(value) {
+    selectedRating=value; if ($("#reviewRating")) $("#reviewRating").value=value||""; if ($("#ratingMeaning")) $("#ratingMeaning").textContent=value?`${value} de 5`:"Selecione uma nota";
+    document.querySelectorAll("[data-rating]").forEach((btn)=>{ const isActive=Number(btn.dataset.rating)<=value; btn.classList.toggle("active",isActive); btn.setAttribute("aria-checked",String(Number(btn.dataset.rating)===value)); });
+}
+
+function renderReviews() {
+    const reviews=appStore.reviews; const total=reviews.length; const average=total?reviews.reduce((s,r)=>s+Number(r.rating||0),0)/total:0;
+    if ($("#avgOverallScore")) $("#avgOverallScore").textContent=average.toFixed(1);
+    if ($("#totalReviewsCount")) $("#totalReviewsCount").textContent=`${total} ${total===1?"avaliação":"avaliações"}`;
+    if ($("#avgStars")) $("#avgStars").textContent=buildStars(Math.round(average));
+    const list=$("#reviewsList"); if (!list) return;
+    if (!reviews.length) { list.innerHTML=`<p class="empty-state">Ainda não há avaliações cadastradas.</p>`; return; }
+    list.innerHTML=reviews.slice(0,5).map((r)=>`<article class="review-card"><header><span><strong>${escapeHtml(r.name)}</strong><small>${escapeHtml(r.service)}</small></span><span class="review-stars" aria-label="${r.rating} de 5 estrelas">${buildStars(r.rating)}</span></header><p>${escapeHtml(r.comment)}</p></article>`).join("");
+}
+
+// ─── Contact ─────────────────────────────────────────────────────────────────
+
+function setupContact() {
+    $("#contactForm")?.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const request = { id:createId("contact"), ...Object.fromEntries(new FormData(event.target).entries()), createdAt:new Date().toISOString() };
+        const store = { ...appStore, contactRequests:[request, ...appStore.contactRequests] };
+        saveStore(store); event.target.reset(); showToast("Solicitação enviada para o atendente.");
+    });
+}
 
 document.addEventListener("DOMContentLoaded", async () => {
     try {
@@ -276,7 +328,7 @@ async function handleResetPassword(event) { event.preventDefault(); const passwo
 async function startGoogleOAuth() { const { error }=await supabase.auth.signInWithOAuth({ provider:"google",options:{ redirectTo:`${DEFAULT_ORIGIN}/` } }); if (error) setAuthStatus(error.message,"error"); }
 async function handleLogout() { await supabase.auth.signOut(); lockApp(); }
 function lockApp() { localStorage.removeItem("salonTechSession"); document.body.classList.add("auth-locked"); }
-function unlockApp(showMsg) { document.body.classList.remove("auth-locked"); setupAdmin(); setupServices(); if (showMsg) console.log("Sessão iniciada."); }
+function unlockApp(showMsg) { document.body.classList.remove("auth-locked"); setupAdmin(); setupServices(); setupReviews(); setupContact(); if (showMsg) console.log("Sessão iniciada."); }
 function setAuthMode(mode) { document.querySelectorAll("[data-auth-mode]").forEach((b)=>{ b.classList.toggle("active",b.dataset.authMode===mode); b.setAttribute("aria-selected",String(b.dataset.authMode===mode)); }); document.querySelectorAll("[data-auth-form]").forEach((f)=>{ f.hidden=f.dataset.authForm!==mode; }); setAuthStatus(""); }
 function setResetMode(mode) { document.querySelectorAll("[data-auth-mode]").forEach((b)=>b.classList.toggle("active",b.dataset.authMode==="login"&&mode==="login")); document.querySelectorAll("[data-auth-form]").forEach((f)=>{ f.hidden=f.dataset.authForm!==mode; }); setAuthStatus(""); }
 function setAuthStatus(msg,type="") { const s=$("#authStatus"); if(!s) return; s.textContent=msg; s.className=`auth-status ${type}`.trim(); }
