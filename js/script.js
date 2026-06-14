@@ -29,25 +29,24 @@ const adminModules = {
     services: { label:"Serviços", kicker:"Catalogo editavel", submitLabel:"Salvar serviço", storeKey:"services", titleField:"nome",
         fields:[{name:"nome",label:"Nome",required:true},{name:"categoria",label:"Categoria",type:"select",options:[{value:"Cabelo",label:"Cabelo"},{value:"Unhas",label:"Unhas"},{value:"Estetica",label:"Estética"},{value:"Sobrancelha",label:"Sobrancelha"}],required:true},{name:"valor",label:"Valor",type:"number",step:"0.01",min:"0",required:true},{name:"duracaoMin",label:"Duração (min)",type:"number",min:"1",required:true},{name:"profissionalId",label:"Profissional",type:"select",source:"team",optionLabel:"nome",required:true},{name:"comissaoPct",label:"Comissão (%)",type:"number",min:"0",max:"100",step:"1",required:true}]},
     team: { label:"Equipe", kicker:"Profissionais", submitLabel:"Salvar profissional", storeKey:"team", titleField:"nome",
-        fields:[{name:"nome",label:"Nome",required:true},{name:"cpf",label:"CPF",placeholder:"000.000.000-00",inputmode:"numeric",maxlength:"14"},{name:"telefone",label:"Telefone",inputmode:"numeric",maxlength:"15"},{name:"cargo",label:"Especialidade",required:true},{name:"tipoPagamento",label:"Tipo de pagamento"},{name:"salario",label:"Salario",type:"number",step:"0.01",min:"0"}]},
+        fields:[{name:"nome",label:"Nome",required:true},{name:"cpf",label:"CPF",inputmode:"numeric",maxlength:"14"},{name:"telefone",label:"Telefone",inputmode:"numeric",maxlength:"15"},{name:"cargo",label:"Especialidade",required:true},{name:"tipoPagamento",label:"Tipo pagamento"},{name:"salario",label:"Salario",type:"number",step:"0.01",min:"0"}]},
     products: { label:"Produtos", kicker:"Estoque", submitLabel:"Salvar produto", storeKey:"products", titleField:"nome",
         fields:[{name:"nome",label:"Produto",required:true},{name:"quantidade",label:"Quantidade",type:"number",min:"0",required:true},{name:"categoria",label:"Categoria"}]},
     expenses: { label:"Despesas", kicker:"Gastos", submitLabel:"Salvar despesa", storeKey:"expenses", titleField:"nome",
         fields:[{name:"nome",label:"Descrição",required:true},{name:"data",label:"Data",type:"date",required:true},{name:"valor",label:"Valor",type:"number",step:"0.01",min:"0",required:true}]},
     paymentMethods: { label:"Pagamentos", kicker:"Formas de pagamento", submitLabel:"Salvar forma", storeKey:"paymentMethods", titleField:"nome",
-        fields:[{name:"nome",label:"Nome",required:true,placeholder:"Pix, dinheiro, cartao..."}]},
+        fields:[{name:"nome",label:"Nome",required:true}]},
     finances: { label:"Finanças", kicker:"Entradas x despesas", submitLabel:"Atualizar relatório", storeKey:"finances", fields:[{name:"inicio",label:"Inicio",type:"date",required:true},{name:"fim",label:"Fim",type:"date",required:true}], readonly:true }
 };
 
+const tableByStoreKey = { clients:"cliente", appointments:"agendamento", services:"servico", team:"funcionario", products:"produto", expenses:"despesa", paymentMethods:"forma_pagamento" };
+
 let currentAdminModule = "clients";
+let editingRecordId = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
-    try {
-        await loadStoreFromSupabase();
-        await setupAuth();
-    } catch (e) {
-        setAuthStatus(`Erro ao conectar: ${e.message}`, "error");
-    }
+    try { await loadStoreFromSupabase(); await setupAuth(); }
+    catch (e) { setAuthStatus(`Erro ao conectar: ${e.message}`, "error"); }
 });
 
 async function loadStoreFromSupabase() {
@@ -91,27 +90,22 @@ function escapeHtml(text) { return String(text||"").replace(/&/g,"&amp;").replac
 function todayISO() { return new Date().toISOString().slice(0,10); }
 function monthStartISO() { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-01`; }
 function displayValue(storeKey, id) { if(!id) return "Nao informado"; const r=(appStore[storeKey]||[]).find((x)=>x.id===String(id)); return r?.nome||r?.name||String(id); }
+function showToast(msg) { alert(msg); }
 
 function setupAdmin() {
     renderAdminTabs();
     renderAdminModule();
-    $("#adminEntityForm")?.addEventListener("submit", (event) => { event.preventDefault(); alert("Salvar: funcionalidade em desenvolvimento."); });
+    $("#adminEntityForm")?.addEventListener("submit", handleAdminSubmit);
+    $("#adminCancelEditBtn")?.addEventListener("click", cancelAdminEdit);
     document.querySelectorAll("[data-open-module]").forEach((a) => a.addEventListener("click", () => openAdminModule(a.dataset.openModule)));
 }
 
-function openAdminModule(key) {
-    currentAdminModule = key;
-    renderAdminTabs();
-    renderAdminModule();
-}
+function openAdminModule(key) { currentAdminModule = key; editingRecordId = null; renderAdminTabs(); renderAdminModule(); }
+function cancelAdminEdit() { editingRecordId = null; $("#adminEntityForm")?.reset(); renderAdminModule(); }
 
 function renderAdminTabs() {
-    const tabs = $("#adminTabs");
-    if (!tabs) return;
-    tabs.innerHTML = moduleOrder.map((key) => {
-        const mod = adminModules[key];
-        return `<button type="button" class="${key===currentAdminModule?"active":""}" data-admin-module="${key}" role="tab" aria-selected="${key===currentAdminModule}">${mod.label}</button>`;
-    }).join("");
+    const tabs = $("#adminTabs"); if (!tabs) return;
+    tabs.innerHTML = moduleOrder.map((key) => { const mod=adminModules[key]; return `<button type="button" class="${key===currentAdminModule?"active":""}" data-admin-module="${key}" role="tab" aria-selected="${key===currentAdminModule}">${mod.label}</button>`; }).join("");
     tabs.querySelectorAll("[data-admin-module]").forEach((btn) => btn.addEventListener("click", () => openAdminModule(btn.dataset.adminModule)));
 }
 
@@ -120,15 +114,18 @@ function renderAdminModule() {
     const records = currentAdminModule === "finances" ? [] : (appStore[mod.storeKey] || []);
     $("#adminEntityKicker").textContent = mod.kicker;
     $("#adminEntityTitle").textContent = mod.label;
-    $("#adminSubmitBtn").textContent = mod.submitLabel;
+    $("#adminSubmitBtn").textContent = editingRecordId ? "Salvar alterações" : mod.submitLabel;
     $("#adminRecordCount").textContent = mod.readonly ? "Relatório" : `${records.length} registros`;
-    $("#adminCancelEditBtn").hidden = true;
+    $("#adminCancelEditBtn").hidden = !editingRecordId;
     const fieldsGrid = $("#adminFieldsGrid");
-    fieldsGrid.innerHTML = mod.fields.map((field) => renderField(field, mod)).join("");
+    fieldsGrid.innerHTML = mod.fields.map(renderField).join("");
     if (currentAdminModule === "appointments") { $("#admin-data").value = todayISO(); $("#admin-hora").value = "14:00"; $("#admin-situacao").value = "Agendado"; }
-    if (currentAdminModule === "expenses") { $("#admin-data").value = todayISO(); }
-    if (currentAdminModule === "services") { if($("#admin-comissaoPct")) $("#admin-comissaoPct").value = "20"; }
+    if (currentAdminModule === "expenses") { if($("#admin-data")) $("#admin-data").value = todayISO(); }
+    if (currentAdminModule === "services" && !editingRecordId) { if($("#admin-comissaoPct")) $("#admin-comissaoPct").value = "20"; }
     if (currentAdminModule === "finances") { if($("#admin-inicio")) $("#admin-inicio").value = monthStartISO(); if($("#admin-fim")) $("#admin-fim").value = todayISO(); }
+    $("#admin-servicoId")?.addEventListener("change", (e) => fillFromService(e.target.value));
+    $("#admin-cpf")?.addEventListener("input", (e) => { e.target.value = formatCpf(e.target.value); });
+    $("#admin-telefone")?.addEventListener("input", (e) => { e.target.value = formatPhone(e.target.value); });
     renderAdminRecords(records);
 }
 
@@ -147,20 +144,91 @@ function renderField(field) {
     return `<div class="field${spanClass}"><label for="admin-${field.name}">${field.label}</label><input type="${type}" ${attrs}></div>`;
 }
 
+function fillFromService(serviceId) {
+    const service = appStore.services.find((s) => s.id === serviceId);
+    if (!service) return;
+    if ($("#admin-valor")) $("#admin-valor").value = Number(service.valor||0).toFixed(2);
+    if ($("#admin-profissionalId")) $("#admin-profissionalId").value = service.profissionalId||"";
+}
+
 function renderAdminRecords(records) {
     const list = $("#adminRecordsList");
     if (currentAdminModule === "finances") { list.innerHTML = `<p class="empty-state">Relatório financeiro em desenvolvimento.</p>`; return; }
     if (!records.length) { list.innerHTML = `<p class="empty-state">Nenhum cadastro encontrado neste módulo.</p>`; return; }
     const mod = adminModules[currentAdminModule];
     list.innerHTML = records.map((r) => {
-        const title = currentAdminModule === "appointments" ? `${displayValue("clients",r.clienteId)} — ${displayValue("services",r.servicoId)}` : (currentAdminModule === "services" ? `${r.nome} — ${formatCurrency(Number(r.valor||0))}` : r[mod.titleField] || mod.label);
-        return `<article class="record-card"><div><h4>${escapeHtml(title)}</h4></div><div class="record-actions"><button class="mini-btn" type="button" disabled>Editar</button><button class="mini-btn danger" type="button" disabled>Excluir</button></div></article>`;
+        const title = currentAdminModule === "appointments" ? `${displayValue("clients",r.clienteId)} — ${displayValue("services",r.servicoId)}` : currentAdminModule === "services" ? `${r.nome} — ${formatCurrency(Number(r.valor||0))}` : r[mod.titleField]||mod.label;
+        const details = currentAdminModule === "appointments" ? `<span>Data: ${formatDate(r.data)} ${r.hora||""}</span><span>Valor: ${formatCurrency(Number(r.valor||0))}</span><span>Situação: ${r.situacao}</span>` :
+            currentAdminModule === "expenses" ? `<span>Data: ${formatDate(r.data)}</span><span>Valor: ${formatCurrency(Number(r.valor||0))}</span>` : "";
+        return `<article class="record-card"><div><h4>${escapeHtml(title)}</h4><div class="record-details">${details}</div></div><div class="record-actions"><button class="mini-btn" type="button" data-edit-record="${r.id}">Editar</button><button class="mini-btn danger" type="button" data-delete-record="${r.id}">Excluir</button></div></article>`;
     }).join("");
+    list.querySelectorAll("[data-edit-record]").forEach((btn) => btn.addEventListener("click", () => editAdminRecord(btn.dataset.editRecord)));
+    list.querySelectorAll("[data-delete-record]").forEach((btn) => btn.addEventListener("click", () => deleteAdminRecord(btn.dataset.deleteRecord)));
+}
+
+async function handleAdminSubmit(event) {
+    event.preventDefault();
+    if (currentAdminModule === "finances") return;
+    const mod = adminModules[currentAdminModule];
+    const formData = new FormData(event.target);
+    const raw = Object.fromEntries(formData.entries());
+    mod.fields.forEach((f) => { if (f.type === "number") raw[f.name] = Number(raw[f.name]||0); });
+    const payload = toDatabasePayload(mod.storeKey, raw);
+    if (!payload) return;
+    const btn = event.submitter; if (btn) btn.disabled = true;
+    try {
+        let q = editingRecordId ? supabase.from(tableByStoreKey[mod.storeKey]).update(payload).eq("id", Number(editingRecordId)) : supabase.from(tableByStoreKey[mod.storeKey]).insert(payload);
+        const { error } = await q;
+        if (error) throw error;
+        await loadStoreFromSupabase();
+        showToast(editingRecordId ? "Cadastro atualizado." : "Cadastro salvo.");
+        event.target.reset(); editingRecordId = null; renderAdminModule();
+    } catch (e) { showToast(`Erro ao salvar: ${e.message}`); } finally { if (btn) btn.disabled = false; }
+}
+
+function toDatabasePayload(storeKey, data) {
+    const nullableText = (v) => String(v||"").trim()||null;
+    const nullableId = (v) => v ? Number(v) : null;
+    const map = {
+        clients: { nome:data.nome, cpf:nullableText(data.cpf), telefone:nullableText(formatPhone(data.telefone)), email:nullableText(data.email) },
+        appointments: { cliente_id:Number(data.clienteId), forma_pag_id:nullableId(data.formaPagamentoId), situacao:data.situacao, data_hora:`${data.data}T${data.hora||"00:00"}:00`, observacoes:nullableText(data.observacoes), servico_id:Number(data.servicoId), valor_total:Number(data.valor||0) },
+        services: { nome:data.nome, duracao:Number(data.duracaoMin), categoria:data.categoria, valor:Number(data.valor), funcionario_id:Number(data.profissionalId), percentual_comissao:Number(data.comissaoPct) },
+        team: { nome:data.nome, cpf:nullableText(data.cpf), telefone:nullableText(formatPhone(data.telefone)), cargo:nullableText(data.cargo), tipo_pagamento:nullableText(data.tipoPagamento), salario:Number(data.salario||0) },
+        products: { nome:data.nome, qtd_estoque:Number(data.quantidade||0), categoria:nullableText(data.categoria) },
+        expenses: { nome:data.nome, data:data.data, valor:Number(data.valor||0) },
+        paymentMethods: { nome:data.nome }
+    };
+    return map[storeKey] || null;
+}
+
+function editAdminRecord(id) {
+    const mod = adminModules[currentAdminModule];
+    const record = (appStore[mod.storeKey]||[]).find((r) => r.id === id);
+    if (!record) return;
+    editingRecordId = id;
+    renderAdminModule();
+    mod.fields.forEach((field) => { const input = $(`#admin-${field.name}`); if (input) input.value = record[field.name]??""});
+    $("#adminSubmitBtn").textContent = "Salvar alterações";
+    $("#adminCancelEditBtn").hidden = false;
+    $("#adminEntityForm").scrollIntoView({ behavior:"smooth", block:"center" });
+}
+
+async function deleteAdminRecord(id) {
+    const mod = adminModules[currentAdminModule];
+    const table = tableByStoreKey[mod.storeKey];
+    if (!table) return;
+    if (!confirm("Excluir este cadastro?")) return;
+    try {
+        const { error } = await supabase.from(table).delete().eq("id", Number(id));
+        if (error) throw error;
+        await loadStoreFromSupabase();
+        editingRecordId = null; renderAdminModule();
+        showToast("Cadastro excluído.");
+    } catch (e) { showToast(`Erro ao excluir: ${e.message}`); }
 }
 
 async function setupAuth() {
-    const input = $("#registerCpf");
-    if (input) input.oninput = (e) => { e.target.value = formatCpf(e.target.value); };
+    const input = $("#registerCpf"); if (input) input.oninput = (e) => { e.target.value = formatCpf(e.target.value); };
     document.querySelectorAll("[data-auth-mode]").forEach((btn) => btn.addEventListener("click", () => setAuthMode(btn.dataset.authMode)));
     $("#loginForm")?.addEventListener("submit", handleLogin);
     $("#registerForm")?.addEventListener("submit", handleRegister);
@@ -183,69 +251,34 @@ async function setupAuth() {
 }
 
 async function handleLogin(event) {
-    event.preventDefault();
-    const email = $("#loginEmail").value.trim().toLowerCase(); const password = $("#loginPassword").value; const btn = event.submitter; if (btn) btn.disabled = true;
-    try {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        const dbUser = appStore.users.find((u) => u.authId === data.user.id);
-        if (!dbUser) { await supabase.auth.signOut(); throw new Error("Conta sem vínculo no sistema."); }
-        storage.set("salonTechSession", { userId: dbUser.id, role: dbUser.role });
-        unlockApp(true); event.target.reset();
-    } catch (e) { setAuthStatus(getAuthErrorMsg(e), "error"); } finally { if (btn) btn.disabled = false; }
+    event.preventDefault(); const email = $("#loginEmail").value.trim().toLowerCase(); const password = $("#loginPassword").value; const btn = event.submitter; if (btn) btn.disabled = true;
+    try { const { data, error } = await supabase.auth.signInWithPassword({ email, password }); if (error) throw error; const dbUser = appStore.users.find((u) => u.authId === data.user.id); if (!dbUser) { await supabase.auth.signOut(); throw new Error("Conta sem vínculo."); } storage.set("salonTechSession", { userId:dbUser.id, role:dbUser.role }); unlockApp(true); event.target.reset(); }
+    catch (e) { setAuthStatus(getAuthErrorMsg(e), "error"); } finally { if (btn) btn.disabled = false; }
 }
-
 async function handleRegister(event) {
-    event.preventDefault();
-    const name = $("#registerName").value.trim(); const email = $("#registerEmail").value.trim().toLowerCase(); const cpf = normalizeCpf($("#registerCpf").value); const password = $("#registerPassword").value; const role = $("#registerRole").value;
+    event.preventDefault(); const name = $("#registerName").value.trim(); const email = $("#registerEmail").value.trim().toLowerCase(); const cpf = normalizeCpf($("#registerCpf").value); const password = $("#registerPassword").value; const role = $("#registerRole").value;
     if (cpf.length !== 11) { setAuthStatus("CPF inválido.", "error"); return; }
-    const professional = appStore.team.find((t) => normalizeCpf(t.cpf) === cpf);
-    if (!professional) { setAuthStatus("CPF não encontrado na equipe.", "error"); return; }
+    const professional = appStore.team.find((t) => normalizeCpf(t.cpf) === cpf); if (!professional) { setAuthStatus("CPF não encontrado na equipe.", "error"); return; }
     const btn = event.submitter; if (btn) btn.disabled = true;
-    try {
-        const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { nome:name, cpf, role, funcionario_id:Number(professional.id) }, emailRedirectTo:`${DEFAULT_ORIGIN}/` } });
-        if (error) throw error;
-        await supabase.from("usuario").insert({ nome:name, senha:`${AUTH_MARKER_PREFIX}${data.user.id}`, tipo:role===ROLE_ADMIN?"A":"F", funcionario_id:Number(professional.id) });
-        await loadStoreFromSupabase();
-        if (data.session) { const dbUser = appStore.users.find((u) => u.authId === data.user.id); if (dbUser) { storage.set("salonTechSession", { userId:dbUser.id, role:dbUser.role }); unlockApp(true); } }
-        else { setAuthStatus("Confirme o e-mail para entrar.", "success"); }
-        event.target.reset();
-    } catch (e) { setAuthStatus(getAuthErrorMsg(e), "error"); } finally { if (btn) btn.disabled = false; }
+    try { const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { nome:name, cpf, role, funcionario_id:Number(professional.id) }, emailRedirectTo:`${DEFAULT_ORIGIN}/` } }); if (error) throw error; await supabase.from("usuario").insert({ nome:name, senha:`${AUTH_MARKER_PREFIX}${data.user.id}`, tipo:role===ROLE_ADMIN?"A":"F", funcionario_id:Number(professional.id) }); await loadStoreFromSupabase(); if (data.session) { const dbUser = appStore.users.find((u) => u.authId === data.user.id); if (dbUser) { storage.set("salonTechSession", { userId:dbUser.id, role:dbUser.role }); unlockApp(true); } } else { setAuthStatus("Confirme o e-mail para entrar.", "success"); } event.target.reset(); }
+    catch (e) { setAuthStatus(getAuthErrorMsg(e), "error"); } finally { if (btn) btn.disabled = false; }
 }
-
 async function handleForgotPassword(event) {
     event.preventDefault(); const email = $("#forgotPasswordEmail").value.trim().toLowerCase(); const btn = event.submitter; if (btn) btn.disabled = true;
     try { const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo:`${DEFAULT_ORIGIN}/?type=recovery` }); if (error) throw error; event.target.reset(); setAuthStatus("Link enviado.", "success"); }
     catch (e) { setAuthStatus(getAuthErrorMsg(e), "error"); } finally { if (btn) btn.disabled = false; }
 }
-
 async function handleResetPassword(event) {
-    event.preventDefault(); const password = $("#resetNewPassword").value;
-    if (password !== $("#resetConfirmPassword").value) { setAuthStatus("As senhas não correspondem.", "error"); return; }
+    event.preventDefault(); const password = $("#resetNewPassword").value; if (password !== $("#resetConfirmPassword").value) { setAuthStatus("As senhas não correspondem.", "error"); return; }
     const btn = event.submitter; if (btn) btn.disabled = true;
     try { const { error } = await supabase.auth.updateUser({ password }); if (error) throw error; event.target.reset(); setAuthStatus("Senha atualizada!", "success"); setTimeout(() => setAuthMode("login"), 1500); }
     catch (e) { setAuthStatus(getAuthErrorMsg(e), "error"); } finally { if (btn) btn.disabled = false; }
 }
-
 async function startGoogleOAuth() { const { error } = await supabase.auth.signInWithOAuth({ provider:"google", options:{ redirectTo:`${DEFAULT_ORIGIN}/` } }); if (error) setAuthStatus(error.message, "error"); }
 async function handleLogout() { await supabase.auth.signOut(); lockApp(); }
-
 function lockApp() { localStorage.removeItem("salonTechSession"); document.body.classList.add("auth-locked"); }
-function unlockApp(showMsg) {
-    document.body.classList.remove("auth-locked");
-    setupAdmin();
-    if (showMsg) console.log("Sessão iniciada.");
-}
-
-function setAuthMode(mode) {
-    document.querySelectorAll("[data-auth-mode]").forEach((b) => { b.classList.toggle("active", b.dataset.authMode===mode); b.setAttribute("aria-selected", String(b.dataset.authMode===mode)); });
-    document.querySelectorAll("[data-auth-form]").forEach((f) => { f.hidden = f.dataset.authForm!==mode; });
-    setAuthStatus("");
-}
-function setResetMode(mode) {
-    document.querySelectorAll("[data-auth-mode]").forEach((b) => b.classList.toggle("active", b.dataset.authMode==="login"&&mode==="login"));
-    document.querySelectorAll("[data-auth-form]").forEach((f) => { f.hidden = f.dataset.authForm!==mode; });
-    setAuthStatus("");
-}
+function unlockApp(showMsg) { document.body.classList.remove("auth-locked"); setupAdmin(); if (showMsg) console.log("Sessão iniciada."); }
+function setAuthMode(mode) { document.querySelectorAll("[data-auth-mode]").forEach((b) => { b.classList.toggle("active", b.dataset.authMode===mode); b.setAttribute("aria-selected", String(b.dataset.authMode===mode)); }); document.querySelectorAll("[data-auth-form]").forEach((f) => { f.hidden = f.dataset.authForm!==mode; }); setAuthStatus(""); }
+function setResetMode(mode) { document.querySelectorAll("[data-auth-mode]").forEach((b) => b.classList.toggle("active", b.dataset.authMode==="login"&&mode==="login")); document.querySelectorAll("[data-auth-form]").forEach((f) => { f.hidden = f.dataset.authForm!==mode; }); setAuthStatus(""); }
 function setAuthStatus(msg, type="") { const s=$("#authStatus"); if(!s) return; s.textContent=msg; s.className=`auth-status ${type}`.trim(); }
 function getAuthErrorMsg(error) { const msg=String(error?.message||error||"erro"); return {"Invalid login credentials":"e-mail ou senha inválidos","User already registered":"e-mail já cadastrado"}[msg]||msg; }
