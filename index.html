@@ -19,7 +19,7 @@
         </ul>
       </nav>
       <div class="nav-controls">
-        <button class="nav-logout" type="button">Sair</button>
+        <button class="nav-logout" id="logoutBtn" type="button">Sair</button>
       </div>
     </div>
   </header>
@@ -49,64 +49,34 @@
       <div class="container">
         <div class="section-header">
           <div><span class="section-kicker">Catálogo interno</span><h2>Serviços disponíveis</h2></div>
-          <p>Consulte os serviços e envie para a agenda.</p>
         </div>
-        <form class="filters" id="filtersForm">
-          <div class="field"><label for="searchInput">Buscar</label><input id="searchInput" type="search" placeholder="Ex: corte, pele..." /></div>
-          <div class="field">
-            <label for="categoryFilter">Categoria</label>
-            <select id="categoryFilter"><option value="todos">Todas</option><option value="Cabelo">Cabelo</option><option value="Unhas">Unhas</option><option value="Estetica">Estética</option><option value="Sobrancelha">Sobrancelha</option></select>
-          </div>
-          <div class="field">
-            <label for="priceFilter">Preço</label>
-            <select id="priceFilter"><option value="todos">Todos</option><option value="ate40">Até R$ 40</option><option value="41a80">R$ 41–80</option><option value="acima80">Acima de R$ 80</option></select>
-          </div>
-          <button class="btn btn-primary" type="submit">Filtrar</button>
-          <button class="btn btn-ghost" type="button" id="clearFiltersBtn">Limpar</button>
-        </form>
-        <div class="catalog-toolbar"><span class="results-count" id="resultsCount">0 serviços</span></div>
         <div class="service-grid" id="servicesGrid"></div>
       </div>
     </section>
 
     <section id="contato">
       <div class="container">
-        <div class="section-header">
-          <div><span class="section-kicker">Fale conosco</span><h2>Entre em contato</h2></div>
-        </div>
+        <div class="section-header"><div><span class="section-kicker">Fale conosco</span><h2>Entre em contato</h2></div></div>
         <form class="form-card" id="contactForm" style="max-width:560px">
           <div class="form-grid">
             <div class="field"><label for="contactName">Nome</label><input id="contactName" name="name" required placeholder="Seu nome" /></div>
-            <div class="field"><label for="contactPhone">Telefone</label><input id="contactPhone" name="phone" placeholder="(00) 00000-0000" /></div>
-            <div class="field"><label for="contactService">Serviço de interesse</label><select id="contactService" name="service"><option value="">Selecione</option></select></div>
-            <div class="field"><label for="contactMessage">Mensagem</label><textarea id="contactMessage" name="message" rows="4" placeholder="Como podemos ajudar?"></textarea></div>
+            <div class="field"><label for="contactService">Serviço</label><select id="contactService" name="service"><option value="">Selecione</option></select></div>
+            <div class="field"><label for="contactMessage">Mensagem</label><textarea id="contactMessage" name="message" rows="4"></textarea></div>
           </div>
-          <div class="form-actions"><button class="btn btn-primary" type="submit">Enviar solicitação</button></div>
+          <div class="form-actions"><button class="btn btn-primary" type="submit">Enviar</button></div>
         </form>
       </div>
     </section>
 
     <section id="avaliacoes">
       <div class="container">
-        <div class="section-header">
-          <div><span class="section-kicker">Opinião dos clientes</span><h2>Avaliações</h2></div>
-          <div>
-            <span id="avgOverallScore">0.0</span> de 5 —
-            <span id="avgStars">-----</span>
-            (<span id="totalReviewsCount">0 avaliações</span>)
-          </div>
-        </div>
+        <div class="section-header"><div><span class="section-kicker">Opinião dos clientes</span><h2>Avaliações</h2></div></div>
         <form class="form-card" id="reviewForm" style="max-width:480px; margin-bottom:32px">
           <div class="form-grid">
             <div class="field"><label for="reviewName">Nome</label><input id="reviewName" name="name" required placeholder="Seu nome" /></div>
             <div class="field"><label for="reviewService">Serviço</label><select id="reviewService" name="service"><option value="">Selecione</option></select></div>
-            <div class="field">
-              <label>Nota</label>
-              <div id="ratingButtons" role="radiogroup"></div>
-              <span id="ratingMeaning">Selecione uma nota</span>
-              <input type="hidden" id="reviewRating" name="rating" />
-            </div>
-            <div class="field"><label for="reviewComment">Comentário</label><textarea id="reviewComment" name="comment" rows="3" placeholder="Conte sua experiência..."></textarea></div>
+            <div class="field"><label>Nota</label><div id="ratingButtons" role="radiogroup"></div><input type="hidden" id="reviewRating" name="rating" /></div>
+            <div class="field"><label for="reviewComment">Comentário</label><textarea id="reviewComment" name="comment" rows="3"></textarea></div>
           </div>
           <div class="form-actions"><button class="btn btn-primary" type="submit">Enviar avaliação</button></div>
         </form>
@@ -121,5 +91,7 @@
       <div class="footer-links"><a href="#inicio">Topo</a></div>
     </div>
   </footer>
+
+  <script type="module" src="js/script.js"></script>
 </body>
 </html>
