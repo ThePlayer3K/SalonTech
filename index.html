@@ -6,7 +6,96 @@
   <title>SalonTech | Sistema do Salão</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
-<body>
+<body class="auth-locked">
+
+  <section class="auth-shell" id="authScreen">
+    <div class="auth-panel">
+      <a class="auth-brand" href="#inicio">
+        <span>Salon<span class="gradient-text">Tech</span></span>
+      </a>
+
+      <div class="auth-copy">
+        <span class="section-kicker">Acesso interno</span>
+        <h1>Entrar no sistema</h1>
+        <p>Gestão de clientes, agenda, equipe, serviços e produtos do salão.</p>
+      </div>
+
+      <div class="auth-tabs" role="tablist">
+        <button class="active" type="button" data-auth-mode="login" role="tab">Entrar</button>
+        <button type="button" data-auth-mode="register" role="tab">Cadastrar</button>
+      </div>
+
+      <form class="auth-form" id="loginForm" data-auth-form="login">
+        <div class="field">
+          <label for="loginEmail">E-mail</label>
+          <input id="loginEmail" type="email" required autocomplete="email" placeholder="voce@email.com" />
+        </div>
+        <div class="field">
+          <label for="loginPassword">Senha</label>
+          <input id="loginPassword" type="password" required autocomplete="current-password" placeholder="Sua senha" />
+        </div>
+        <button class="btn btn-primary" type="submit">Entrar</button>
+        <button class="btn btn-ghost" type="button" id="googleLoginBtn">Entrar com Google</button>
+        <button class="btn btn-link" type="button" id="forgotPasswordBtn">Esqueci a senha</button>
+      </form>
+
+      <form class="auth-form" id="forgotPasswordForm" data-auth-form="forgot-password" hidden>
+        <div class="field">
+          <label for="forgotPasswordEmail">E-mail da conta</label>
+          <input id="forgotPasswordEmail" type="email" required placeholder="voce@email.com" />
+        </div>
+        <div class="field">
+          <label for="forgotPasswordCpf">CPF associado</label>
+          <input id="forgotPasswordCpf" required inputmode="numeric" maxlength="14" placeholder="000.000.000-00" />
+        </div>
+        <button class="btn btn-primary" type="submit">Enviar link de recuperação</button>
+        <button class="btn btn-link" type="button" id="backToLoginBtn">Voltar para login</button>
+      </form>
+
+      <form class="auth-form" id="resetPasswordForm" data-auth-form="reset-password" hidden>
+        <div class="field">
+          <label for="resetNewPassword">Nova senha</label>
+          <input id="resetNewPassword" type="password" minlength="6" required placeholder="Crie uma nova senha" />
+        </div>
+        <div class="field">
+          <label for="resetConfirmPassword">Confirmar nova senha</label>
+          <input id="resetConfirmPassword" type="password" minlength="6" required placeholder="Confirme a nova senha" />
+        </div>
+        <button class="btn btn-primary" type="submit">Redefinir senha</button>
+      </form>
+
+      <form class="auth-form" id="registerForm" data-auth-form="register" hidden>
+        <div class="field">
+          <label for="registerName">Nome do usuário</label>
+          <input id="registerName" required autocomplete="name" placeholder="Nome completo" />
+        </div>
+        <div class="field">
+          <label for="registerEmail">E-mail</label>
+          <input id="registerEmail" type="email" required autocomplete="email" placeholder="voce@email.com" />
+        </div>
+        <div class="field">
+          <label for="registerCpf">CPF do funcionário</label>
+          <input id="registerCpf" required inputmode="numeric" maxlength="14" placeholder="000.000.000-00" />
+        </div>
+        <div class="field">
+          <label for="registerPassword">Senha</label>
+          <input id="registerPassword" type="password" minlength="6" required placeholder="Crie uma senha" />
+        </div>
+        <div class="field">
+          <label for="registerRole">Perfil de acesso</label>
+          <select id="registerRole" required>
+            <option value="professional">Profissional linha de frente</option>
+            <option value="admin">Administrador</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" type="submit">Criar conta e entrar</button>
+        <button class="btn btn-ghost" type="button" id="googleRegisterBtn">Cadastrar com Google</button>
+      </form>
+
+      <p class="auth-status" id="authStatus" aria-live="polite"></p>
+    </div>
+  </section>
+
   <header class="app-header">
     <div class="container navbar">
       <a class="brand" href="#inicio"><span>Salon<span class="gradient-text">Tech</span></span></a>
@@ -29,7 +118,7 @@
       <div class="container hero-content">
         <span class="eyebrow">Sistema interno | SalonTech</span>
         <h1>Gestão do salão sem complicação</h1>
-        <p>Centralize clientes, agenda, equipe e serviços em uma interface direta.</p>
+        <p>Centralize clientes, agenda, equipe e serviços.</p>
         <div class="hero-actions">
           <a class="btn btn-primary" href="#painel">Abrir painel</a>
           <a class="btn btn-secondary" href="#servicos">Ver serviços</a>
@@ -39,7 +128,7 @@
 
     <section class="workflow-band">
       <div class="container workflow-grid">
-        <article><span>01</span><strong>Cadastre clientes</strong><p>Mantenha contatos e dados organizados.</p></article>
+        <article><span>01</span><strong>Cadastre clientes</strong><p>Dados organizados para agilizar o atendimento.</p></article>
         <article><span>02</span><strong>Escolha serviços</strong><p>Consulte valores e duração no catálogo.</p></article>
         <article><span>03</span><strong>Monte a agenda</strong><p>Registre horários e acompanhe atendimentos.</p></article>
       </div>
@@ -47,9 +136,7 @@
 
     <section id="servicos">
       <div class="container">
-        <div class="section-header">
-          <div><span class="section-kicker">Catálogo interno</span><h2>Serviços disponíveis</h2></div>
-        </div>
+        <div class="section-header"><div><span class="section-kicker">Catálogo interno</span><h2>Serviços disponíveis</h2></div></div>
         <div class="service-grid" id="servicesGrid"></div>
       </div>
     </section>
@@ -59,7 +146,7 @@
         <div class="section-header"><div><span class="section-kicker">Fale conosco</span><h2>Entre em contato</h2></div></div>
         <form class="form-card" id="contactForm" style="max-width:560px">
           <div class="form-grid">
-            <div class="field"><label for="contactName">Nome</label><input id="contactName" name="name" required placeholder="Seu nome" /></div>
+            <div class="field"><label for="contactName">Nome</label><input id="contactName" name="name" required /></div>
             <div class="field"><label for="contactService">Serviço</label><select id="contactService" name="service"><option value="">Selecione</option></select></div>
             <div class="field"><label for="contactMessage">Mensagem</label><textarea id="contactMessage" name="message" rows="4"></textarea></div>
           </div>
@@ -70,12 +157,15 @@
 
     <section id="avaliacoes">
       <div class="container">
-        <div class="section-header"><div><span class="section-kicker">Opinião dos clientes</span><h2>Avaliações</h2></div></div>
+        <div class="section-header">
+          <div><span class="section-kicker">Opinião dos clientes</span><h2>Avaliações</h2></div>
+          <div><span id="avgOverallScore">0.0</span> — <span id="avgStars">-----</span> (<span id="totalReviewsCount">0 avaliações</span>)</div>
+        </div>
         <form class="form-card" id="reviewForm" style="max-width:480px; margin-bottom:32px">
           <div class="form-grid">
-            <div class="field"><label for="reviewName">Nome</label><input id="reviewName" name="name" required placeholder="Seu nome" /></div>
+            <div class="field"><label for="reviewName">Nome</label><input id="reviewName" name="name" required /></div>
             <div class="field"><label for="reviewService">Serviço</label><select id="reviewService" name="service"><option value="">Selecione</option></select></div>
-            <div class="field"><label>Nota</label><div id="ratingButtons" role="radiogroup"></div><input type="hidden" id="reviewRating" name="rating" /></div>
+            <div class="field"><label>Nota</label><div id="ratingButtons" role="radiogroup"></div><span id="ratingMeaning">Selecione uma nota</span><input type="hidden" id="reviewRating" name="rating" /></div>
             <div class="field"><label for="reviewComment">Comentário</label><textarea id="reviewComment" name="comment" rows="3"></textarea></div>
           </div>
           <div class="form-actions"><button class="btn btn-primary" type="submit">Enviar avaliação</button></div>
@@ -87,7 +177,7 @@
 
   <footer class="site-footer">
     <div class="container footer-grid">
-      <div class="footer-brand"><div><strong>SalonTech</strong><p>Sistema interno para cadastro, agenda e catálogo do salão.</p></div></div>
+      <div class="footer-brand"><div><strong>SalonTech</strong><p>Sistema interno para cadastro, agenda e catálogo.</p></div></div>
       <div class="footer-links"><a href="#inicio">Topo</a></div>
     </div>
   </footer>
