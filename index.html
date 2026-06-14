@@ -166,8 +166,44 @@
 
     <section id="servicos">
       <div class="container">
-        <div class="section-header"><div><span class="section-kicker">Catálogo interno</span><h2>Serviços disponíveis</h2></div></div>
-        <div class="service-grid" id="servicesGrid"></div>
+        <div class="section-header">
+          <div>
+            <span class="section-kicker">Catálogo interno</span>
+            <h2>Serviços disponíveis</h2>
+          </div>
+          <p>Consulte os serviços e envie o item escolhido diretamente para a agenda.</p>
+        </div>
+        <form class="filters" id="filtersForm" aria-label="Filtros de busca de serviços">
+          <div class="field">
+            <label for="searchInput">Buscar serviço</label>
+            <input id="searchInput" type="search" placeholder="Ex: corte, pele ou unhas" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="categoryFilter">Categoria</label>
+            <select id="categoryFilter">
+              <option value="todos">Todas</option>
+              <option value="Cabelo">Cabelo</option>
+              <option value="Unhas">Unhas</option>
+              <option value="Estetica">Estética</option>
+              <option value="Sobrancelha">Sobrancelha</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="priceFilter">Preço</label>
+            <select id="priceFilter">
+              <option value="todos">Todos</option>
+              <option value="ate40">Até R$ 40</option>
+              <option value="41a80">R$ 41 a R$ 80</option>
+              <option value="acima80">Acima de R$ 80</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" type="submit">Filtrar</button>
+          <button class="btn btn-ghost" type="button" id="clearFiltersBtn">Limpar</button>
+        </form>
+        <div class="catalog-toolbar">
+          <span class="results-count" id="resultsCount" aria-live="polite">0 serviços</span>
+        </div>
+        <div class="service-grid" id="servicesGrid" aria-live="polite"></div>
       </div>
     </section>
 
