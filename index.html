@@ -5,20 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="SalonTech: sistema interno para organizar clientes, agenda, equipe, serviços e catálogo do salão." />
   <title>SalonTech | Sistema do Salão</title>
+  <link rel="icon" href="assets/brand/favicon.jpeg" type="image/jpeg" />
+  <link rel="shortcut icon" href="assets/brand/favicon.jpeg" type="image/jpeg" />
+  <link rel="apple-touch-icon" href="assets/brand/favicon.jpeg" />
+  <link rel="manifest" href="site.webmanifest" />
+  <meta name="theme-color" content="#a50f1c" />
+  <meta property="og:image" content="assets/brand/favicon.jpeg" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body class="auth-locked">
-
+  
+  <!-- Tela de Offline Criativa -->
   <div class="offline-screen" id="offlineScreen" hidden>
     <div class="offline-content">
       <div class="offline-icon">✂️🔌</div>
       <h2>Erro 404: Conexão cortada!</h2>
-      <p>Parece que alguém tropeçou no cabo do secador e a internet caiu. Verifique sua conexão para voltar ao trabalho.</p>
+      <p>Parece que alguém tropeçou no cabo do secador e a internet caiu. Verifique sua conexão Wi-Fi ou rede móvel para voltar ao trabalho.</p>
     </div>
   </div>
 
   <div class="splash-screen" id="splashScreen">
     <div class="splash-logo">
+      <img src="assets/brand/favicon.jpeg" alt="Logo SalonTech" class="splash-image" />
       <span class="splash-text">Salon<span class="gradient-text">Tech</span></span>
     </div>
   </div>
@@ -26,17 +34,21 @@
   <section class="auth-shell" id="authScreen" aria-labelledby="authTitle">
     <div class="auth-panel">
       <a class="auth-brand" href="#inicio" aria-label="SalonTech">
+        <img src="assets/brand/favicon.jpeg" alt="Logo SalonTech" class="auth-logo" />
         <span>Salon<span class="gradient-text">Tech</span></span>
       </a>
+
       <div class="auth-copy">
         <span class="section-kicker">Acesso interno</span>
         <h1 id="authTitle">Entrar no sistema</h1>
-        <p>Gestão de clientes, agenda, equipe, serviços e produtos do salão.</p>
+        <p>Gestão de clientes, agenda, equipe, serviços e produtos usados no salão.</p>
       </div>
+
       <div class="auth-tabs" role="tablist" aria-label="Entrar ou criar conta">
         <button class="active" type="button" data-auth-mode="login" role="tab" aria-selected="true">Entrar</button>
         <button type="button" data-auth-mode="register" role="tab" aria-selected="false">Cadastrar</button>
       </div>
+
       <form class="auth-form" id="loginForm" data-auth-form="login">
         <div class="field">
           <label for="loginEmail">E-mail</label>
@@ -56,6 +68,7 @@
         <button class="btn btn-ghost" type="button" id="googleLoginBtn">Entrar com Google</button>
         <button class="btn btn-link" type="button" id="forgotPasswordBtn">Esqueci a senha</button>
       </form>
+
       <form class="auth-form" id="forgotPasswordForm" data-auth-form="forgot-password" hidden>
         <div class="field">
           <label for="forgotPasswordEmail">E-mail da conta</label>
@@ -63,11 +76,12 @@
         </div>
         <div class="field">
           <label for="forgotPasswordCpf">CPF associado à conta</label>
-          <input id="forgotPasswordCpf" required inputmode="numeric" maxlength="14" placeholder="000.000.000-00" />
+          <input id="forgotPasswordCpf" required inputmode="numeric" maxlength="14" autocomplete="off" placeholder="000.000.000-00" />
         </div>
         <button class="btn btn-primary" type="submit">Enviar link de recuperação</button>
         <button class="btn btn-link" type="button" id="backToLoginBtn">Voltar para login</button>
       </form>
+
       <form class="auth-form" id="resetPasswordForm" data-auth-form="reset-password" hidden>
         <div class="field">
           <label for="resetNewPassword">Nova senha</label>
@@ -91,6 +105,7 @@
         </div>
         <button class="btn btn-primary" type="submit">Redefinir senha</button>
       </form>
+
       <form class="auth-form" id="registerForm" data-auth-form="register" hidden>
         <div class="field">
           <label for="registerName">Nome do usuário</label>
@@ -102,7 +117,7 @@
         </div>
         <div class="field">
           <label for="registerCpf">CPF do funcionário</label>
-          <input id="registerCpf" required inputmode="numeric" maxlength="14" placeholder="000.000.000-00" />
+          <input id="registerCpf" required inputmode="numeric" maxlength="14" autocomplete="off" placeholder="000.000.000-00" />
         </div>
         <div class="field">
           <label for="registerPassword">Senha</label>
@@ -124,18 +139,39 @@
         <button class="btn btn-primary" type="submit">Criar conta e entrar</button>
         <button class="btn btn-ghost" type="button" id="googleRegisterBtn">Cadastrar com Google</button>
       </form>
+
+      <form class="auth-form" id="googleAccessForm" data-auth-form="google" hidden>
+        <div class="field">
+          <label for="googleCpf">CPF do funcionário</label>
+          <input id="googleCpf" required inputmode="numeric" maxlength="14" autocomplete="off" placeholder="000.000.000-00" />
+        </div>
+        <div class="field">
+          <label for="googleRole">Perfil de acesso</label>
+          <select id="googleRole" required>
+            <option value="professional">Profissional linha de frente</option>
+            <option value="admin">Administrador</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" type="submit">Continuar com Google</button>
+        <button class="btn btn-link" type="button" id="backFromGoogleBtn">Voltar</button>
+      </form>
+
       <p class="auth-status" id="authStatus" aria-live="polite"></p>
     </div>
   </section>
 
+  <a href="#conteudo" class="skip-link">Pular para o conteúdo principal</a>
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
 
   <header class="app-header">
-    <div class="container navbar">
+    <div class="container navbar" aria-label="Navegação principal">
       <a class="brand" href="#inicio" aria-label="Página inicial do SalonTech">
+        <img src="assets/brand/favicon.jpeg" alt="Logo SalonTech" class="brand-logo" />
         <span>Salon<span class="gradient-text">Tech</span></span>
       </a>
-      <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" aria-controls="navLinks" aria-expanded="false" aria-label="Abrir menu">☰</button>
+
+      <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" aria-controls="navLinks" aria-expanded="false" aria-label="Abrir menu de navegação">☰</button>
+
       <nav>
         <ul class="nav-links" id="navLinks">
           <li><a href="#painel" data-open-module="clients">Clientes</a></li>
@@ -148,8 +184,9 @@
           <li><a href="#painel" data-open-module="finances">Finanças</a></li>
         </ul>
       </nav>
+
       <div class="nav-controls">
-        <button class="nav-action" id="themeToggle" type="button" aria-label="Alternar tema">◐</button>
+        <button class="nav-action" id="themeToggle" type="button" aria-label="Alternar tema claro ou escuro">◐</button>
         <button class="nav-logout" id="logoutBtn" type="button">Sair</button>
       </div>
     </div>
@@ -161,7 +198,9 @@
       <div class="container hero-content">
         <span class="eyebrow">Sistema interno | SalonTech</span>
         <h1>Gestão do salão sem complicação</h1>
-        <p>Centralize clientes, agenda, equipe e serviços em uma interface direta para o atendente.</p>
+        <p>
+          Centralize clientes, agenda, equipe e serviços em uma interface direta para o atendente trabalhar com mais clareza no dia a dia.
+        </p>
         <div class="hero-actions">
           <a class="btn btn-primary" href="#painel">Abrir painel</a>
           <a class="btn btn-secondary" href="#servicos">Ver serviços</a>
@@ -169,11 +208,23 @@
       </div>
     </section>
 
-    <section class="workflow-band" aria-label="Fluxo de trabalho">
+    <section class="workflow-band" aria-label="Fluxo de trabalho do atendente">
       <div class="container workflow-grid">
-        <article><span>01</span><strong>Cadastre clientes</strong><p>Dados organizados para agilizar o atendimento.</p></article>
-        <article><span>02</span><strong>Escolha serviços</strong><p>Consulte valores e duração no catálogo.</p></article>
-        <article><span>03</span><strong>Monte a agenda</strong><p>Registre horários e acompanhe atendimentos.</p></article>
+        <article>
+          <span>01</span>
+          <strong>Cadastre clientes</strong>
+          <p>Mantenha contatos e dados básicos organizados para agilizar o atendimento.</p>
+        </article>
+        <article>
+          <span>02</span>
+          <strong>Escolha serviços</strong>
+          <p>Use o catálogo interno para consultar valores, duração e categoria.</p>
+        </article>
+        <article>
+          <span>03</span>
+          <strong>Monte a agenda</strong>
+          <p>Registre horários e acompanhe os próximos atendimentos no painel.</p>
+        </article>
       </div>
     </section>
 
@@ -184,10 +235,12 @@
             <span class="section-kicker">Painel do atendente</span>
             <h2 id="painelTitulo">Painel unificado</h2>
           </div>
-          <p>Gerencie clientes, agenda, serviços, despesas e o relatório financeiro.</p>
+          <p>Gerencie clientes, agenda, serviços editáveis, despesas, formas de pagamento e o relatório financeiro em um só lugar.</p>
         </div>
+
         <div class="dashboard-shell">
           <div class="dashboard-tabs" id="adminTabs" role="tablist" aria-label="Módulos de cadastro"></div>
+
           <div class="dashboard-workspace">
             <div class="dashboard-heading">
               <div>
@@ -196,6 +249,7 @@
               </div>
               <span class="records-count" id="adminRecordCount">0 registros</span>
             </div>
+
             <form class="form-card" id="adminEntityForm">
               <div class="form-grid" id="adminFieldsGrid"></div>
               <div class="form-actions">
@@ -203,6 +257,7 @@
                 <button class="btn btn-ghost" id="adminCancelEditBtn" type="button" hidden>Cancelar edição</button>
               </div>
             </form>
+
             <div class="records-list" id="adminRecordsList" aria-live="polite"></div>
           </div>
         </div>
@@ -216,8 +271,9 @@
             <span class="section-kicker">Catálogo interno</span>
             <h2 id="servicosTitulo">Serviços disponíveis</h2>
           </div>
-          <p>Consulte os serviços e envie o item escolhido diretamente para a agenda.</p>
+          <p>Consulte os serviços e envie o item escolhido diretamente para o cadastro da agenda.</p>
         </div>
+
         <form class="filters" id="filtersForm" aria-label="Filtros de busca de serviços">
           <div class="field">
             <label for="searchInput">Buscar serviço</label>
@@ -245,9 +301,11 @@
           <button class="btn btn-primary" type="submit">Filtrar</button>
           <button class="btn btn-ghost" type="button" id="clearFiltersBtn">Limpar</button>
         </form>
+
         <div class="catalog-toolbar">
-          <span class="results-count" id="resultsCount" aria-live="polite">0 serviços</span>
+          <span class="results-count" id="resultsCount" aria-live="polite">7 serviços</span>
         </div>
+
         <div class="service-grid" id="servicesGrid" aria-live="polite"></div>
       </div>
     </section>
@@ -255,8 +313,16 @@
 
   <footer class="site-footer">
     <div class="container footer-grid">
-      <div class="footer-brand"><div><strong>SalonTech</strong><p>Sistema interno para cadastro, agenda e catálogo.</p></div></div>
-      <div class="footer-links"><a href="#inicio">Topo</a></div>
+      <div class="footer-brand">
+        <img src="assets/brand/favicon.jpeg" alt="" class="footer-logo" aria-hidden="true" />
+        <div>
+          <strong>SalonTech</strong>
+          <p>Sistema interno para cadastro, agenda e catálogo do salão.</p>
+        </div>
+      </div>
+      <div class="footer-links">
+        <a href="#inicio">Topo</a>
+      </div>
     </div>
   </footer>
 

@@ -3,41 +3,99 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Página não encontrada no SalonTech." />
   <title>404 - Não Encontrado | SalonTech</title>
+  <link rel="icon" href="assets/brand/favicon.jpeg" type="image/jpeg" />
+  <link rel="shortcut icon" href="assets/brand/favicon.jpeg" type="image/jpeg" />
+  <link rel="apple-touch-icon" href="assets/brand/favicon.jpeg" />
+  <link rel="manifest" href="site.webmanifest" />
+  <meta name="theme-color" content="#a50f1c" />
   <link rel="stylesheet" href="css/style.css" />
   <style>
-    .not-found-shell { min-height: calc(100vh - 160px); display: flex; align-items: center; justify-content: center; padding: 40px 20px; text-align: center; }
-    .not-found-content { max-width: 600px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
-    .not-found-icon { font-size: 5rem; animation: floatIcon 3s ease-in-out infinite; }
-    .not-found-title { font-size: clamp(4rem, 10vw, 6rem); line-height: 1; color: var(--primary); }
-    .not-found-subtitle { font-size: 1.8rem; }
-    .not-found-text { color: var(--muted); font-size: 1.1rem; }
-    @keyframes floatIcon { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+    .not-found-shell {
+      min-height: calc(100vh - 160px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      text-align: center;
+    }
+    
+    .not-found-content {
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .not-found-icon {
+      font-size: 5rem;
+      margin-bottom: 8px;
+      animation: floatIcon 3s ease-in-out infinite;
+    }
+
+    .not-found-title {
+      font-size: clamp(4rem, 10vw, 6rem);
+      line-height: 1;
+      color: var(--primary);
+      margin: 0;
+    }
+
+    .not-found-subtitle {
+      font-size: 1.8rem;
+      margin: 0;
+      color: var(--text);
+    }
+
+    .not-found-text {
+      color: var(--muted);
+      font-size: 1.1rem;
+      margin-bottom: 24px;
+    }
+    
+    @keyframes floatIcon {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
   </style>
 </head>
 <body>
   <header class="app-header">
     <div class="container navbar">
-      <a class="brand" href="index.html"><span>Salon<span class="gradient-text">Tech</span></span></a>
+      <a class="brand" href="index.html">
+        <img src="assets/brand/favicon.jpeg" alt="Logo SalonTech" class="brand-logo" />
+        <span>Salon<span class="gradient-text">Tech</span></span>
+      </a>
       <div class="nav-controls">
         <a class="btn btn-secondary" href="index.html">Voltar ao Início</a>
       </div>
     </div>
   </header>
-  <main>
+
+  <main id="conteudo">
     <section class="not-found-shell">
       <div class="not-found-content">
         <div class="not-found-icon">✂️</div>
         <h1 class="not-found-title">404</h1>
         <h2 class="not-found-subtitle">Página não encontrada</h2>
-        <p class="not-found-text">Ops! Parece que cortamos um pouco demais. A página que você está procurando não existe ou foi movida.</p>
+        <p class="not-found-text">
+          Ops! Parece que cortamos um pouco demais. A página que você está procurando não existe, foi movida ou o link está quebrado.
+        </p>
         <a href="index.html" class="btn btn-primary">Voltar para o Sistema</a>
       </div>
     </section>
   </main>
+
   <footer class="site-footer">
     <div class="container footer-grid">
-      <div class="footer-brand"><div><strong>SalonTech</strong><p>Sistema interno para cadastro, agenda e catálogo do salão.</p></div></div>
+      <div class="footer-brand">
+        <img src="assets/brand/favicon.jpeg" alt="" class="footer-logo" aria-hidden="true" />
+        <div>
+          <strong>SalonTech</strong>
+          <p>Sistema interno para cadastro, agenda e catálogo do salão.</p>
+        </div>
+      </div>
     </div>
   </footer>
 </body>
