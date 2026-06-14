@@ -1,20 +1,22 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="SalonTech: sistema interno para organizar clientes, agenda, equipe, serviços e catálogo do salão." />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SalonTech: sistema interno para organizar clientes, agenda, equipe, serviços e catálogo do salão.">
   <title>SalonTech | Sistema do Salão</title>
-  <link rel="icon" href="assets/brand/favicon.jpeg" type="image/jpeg" />
-  <link rel="shortcut icon" href="assets/brand/favicon.jpeg" type="image/jpeg" />
-  <link rel="apple-touch-icon" href="assets/brand/favicon.jpeg" />
-  <link rel="manifest" href="site.webmanifest" />
-  <meta name="theme-color" content="#a50f1c" />
-  <meta property="og:image" content="assets/brand/favicon.jpeg" />
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="assets/brand/favicon.jpeg" type="image/jpeg">
+  <link rel="shortcut icon" href="assets/brand/favicon.jpeg" type="image/jpeg">
+  <link rel="apple-touch-icon" href="assets/brand/favicon.jpeg">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="theme-color" content="#a50f1c">
+  <meta property="og:image" content="assets/brand/favicon.jpeg">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="auth-locked">
-  
+
+  <a href="#conteudo" class="skip-link">Pular para o conteúdo principal</a>
+
   <!-- Tela de Offline Criativa -->
   <div class="offline-screen" id="offlineScreen" hidden>
     <div class="offline-content">
@@ -26,7 +28,7 @@
 
   <div class="splash-screen" id="splashScreen">
     <div class="splash-logo">
-      <img src="assets/brand/favicon.jpeg" alt="Logo SalonTech" class="splash-image" />
+      <img src="assets/brand/favicon.jpeg" alt="Logo SalonTech" class="splash-image">
       <span class="splash-text">Salon<span class="gradient-text">Tech</span></span>
     </div>
   </div>
@@ -34,7 +36,7 @@
   <section class="auth-shell" id="authScreen" aria-labelledby="authTitle">
     <div class="auth-panel">
       <a class="auth-brand" href="#inicio" aria-label="SalonTech">
-        <img src="assets/brand/favicon.jpeg" alt="Logo SalonTech" class="auth-logo" />
+        <img src="assets/brand/favicon.jpeg" alt="Logo SalonTech" class="auth-logo">
         <span>Salon<span class="gradient-text">Tech</span></span>
       </a>
 
@@ -45,22 +47,23 @@
       </div>
 
       <div class="auth-tabs" role="tablist" aria-label="Entrar ou criar conta">
-        <button class="active" type="button" data-auth-mode="login" role="tab" aria-selected="true">Entrar</button>
-        <button type="button" data-auth-mode="register" role="tab" aria-selected="false">Cadastrar</button>
+        <button class="active" type="button" data-auth-mode="login" role="tab" aria-selected="true" aria-controls="loginPanel">Entrar</button>
+        <button type="button" data-auth-mode="register" role="tab" aria-selected="false" aria-controls="registerPanel">Cadastrar</button>
       </div>
 
+      <div id="loginPanel" role="tabpanel" tabindex="0">
       <form class="auth-form" id="loginForm" data-auth-form="login">
         <div class="field">
           <label for="loginEmail">E-mail</label>
-          <input id="loginEmail" type="email" required autocomplete="email" placeholder="voce@email.com" />
+          <input id="loginEmail" type="email" required autocomplete="email" placeholder="voce@email.com">
         </div>
         <div class="field">
           <label for="loginPassword">Senha</label>
           <div class="password-wrapper">
-            <input id="loginPassword" type="password" required autocomplete="current-password" placeholder="Sua senha" />
+            <input id="loginPassword" type="password" required autocomplete="current-password" placeholder="Sua senha">
             <button type="button" class="password-toggle" aria-label="Mostrar senha">
               <svg class="eye-icon eye-show" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              <svg class="eye-icon eye-hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              <svg class="eye-icon eye-hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
             </button>
           </div>
         </div>
@@ -68,15 +71,16 @@
         <button class="btn btn-ghost" type="button" id="googleLoginBtn">Entrar com Google</button>
         <button class="btn btn-link" type="button" id="forgotPasswordBtn">Esqueci a senha</button>
       </form>
+      </div>
 
       <form class="auth-form" id="forgotPasswordForm" data-auth-form="forgot-password" hidden>
         <div class="field">
           <label for="forgotPasswordEmail">E-mail da conta</label>
-          <input id="forgotPasswordEmail" type="email" required autocomplete="email" placeholder="voce@email.com" />
+          <input id="forgotPasswordEmail" type="email" required autocomplete="email" placeholder="voce@email.com">
         </div>
         <div class="field">
           <label for="forgotPasswordCpf">CPF associado à conta</label>
-          <input id="forgotPasswordCpf" required inputmode="numeric" maxlength="14" autocomplete="off" placeholder="000.000.000-00" />
+          <input id="forgotPasswordCpf" type="text" required inputmode="numeric" maxlength="14" autocomplete="off" placeholder="000.000.000-00">
         </div>
         <button class="btn btn-primary" type="submit">Enviar link de recuperação</button>
         <button class="btn btn-link" type="button" id="backToLoginBtn">Voltar para login</button>
@@ -86,52 +90,54 @@
         <div class="field">
           <label for="resetNewPassword">Nova senha</label>
           <div class="password-wrapper">
-            <input id="resetNewPassword" type="password" minlength="6" required autocomplete="new-password" placeholder="Crie uma nova senha" />
+            <input id="resetNewPassword" type="password" minlength="6" required autocomplete="new-password" placeholder="Crie uma nova senha">
             <button type="button" class="password-toggle" aria-label="Mostrar senha">
               <svg class="eye-icon eye-show" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              <svg class="eye-icon eye-hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              <svg class="eye-icon eye-hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
             </button>
           </div>
         </div>
         <div class="field">
           <label for="resetConfirmPassword">Confirmar nova senha</label>
           <div class="password-wrapper">
-            <input id="resetConfirmPassword" type="password" minlength="6" required autocomplete="new-password" placeholder="Confirme a nova senha" />
+            <input id="resetConfirmPassword" type="password" minlength="6" required autocomplete="new-password" placeholder="Confirme a nova senha">
             <button type="button" class="password-toggle" aria-label="Mostrar senha">
               <svg class="eye-icon eye-show" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              <svg class="eye-icon eye-hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              <svg class="eye-icon eye-hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
             </button>
           </div>
         </div>
         <button class="btn btn-primary" type="submit">Redefinir senha</button>
       </form>
 
+      <div id="registerPanel" role="tabpanel" tabindex="0">
       <form class="auth-form" id="registerForm" data-auth-form="register" hidden>
         <div class="field">
           <label for="registerName">Nome do usuário</label>
-          <input id="registerName" required autocomplete="name" placeholder="Nome completo" />
+          <input id="registerName" type="text" required autocomplete="name" placeholder="Nome completo">
         </div>
         <div class="field">
           <label for="registerEmail">E-mail</label>
-          <input id="registerEmail" type="email" required autocomplete="email" placeholder="voce@email.com" />
+          <input id="registerEmail" type="email" required autocomplete="email" placeholder="voce@email.com">
         </div>
         <div class="field">
           <label for="registerCpf">CPF do funcionário</label>
-          <input id="registerCpf" required inputmode="numeric" maxlength="14" autocomplete="off" placeholder="000.000.000-00" />
+          <input id="registerCpf" type="text" required inputmode="numeric" maxlength="14" autocomplete="off" placeholder="000.000.000-00">
         </div>
         <div class="field">
           <label for="registerPassword">Senha</label>
           <div class="password-wrapper">
-            <input id="registerPassword" type="password" minlength="6" required autocomplete="new-password" placeholder="Crie uma senha" />
+            <input id="registerPassword" type="password" minlength="6" required autocomplete="new-password" placeholder="Crie uma senha">
             <button type="button" class="password-toggle" aria-label="Mostrar senha">
               <svg class="eye-icon eye-show" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              <svg class="eye-icon eye-hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              <svg class="eye-icon eye-hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
             </button>
           </div>
         </div>
         <div class="field">
           <label for="registerRole">Perfil de acesso</label>
           <select id="registerRole" required>
+            <option value="">Selecione um perfil</option>
             <option value="professional">Profissional linha de frente</option>
             <option value="admin">Administrador</option>
           </select>
@@ -139,15 +145,17 @@
         <button class="btn btn-primary" type="submit">Criar conta e entrar</button>
         <button class="btn btn-ghost" type="button" id="googleRegisterBtn">Cadastrar com Google</button>
       </form>
+      </div>
 
       <form class="auth-form" id="googleAccessForm" data-auth-form="google" hidden>
         <div class="field">
           <label for="googleCpf">CPF do funcionário</label>
-          <input id="googleCpf" required inputmode="numeric" maxlength="14" autocomplete="off" placeholder="000.000.000-00" />
+          <input id="googleCpf" type="text" required inputmode="numeric" maxlength="14" autocomplete="off" placeholder="000.000.000-00">
         </div>
         <div class="field">
           <label for="googleRole">Perfil de acesso</label>
           <select id="googleRole" required>
+            <option value="">Selecione um perfil</option>
             <option value="professional">Profissional linha de frente</option>
             <option value="admin">Administrador</option>
           </select>
@@ -160,19 +168,18 @@
     </div>
   </section>
 
-  <a href="#conteudo" class="skip-link">Pular para o conteúdo principal</a>
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
 
   <header class="app-header">
-    <div class="container navbar" aria-label="Navegação principal">
+    <div class="container navbar">
       <a class="brand" href="#inicio" aria-label="Página inicial do SalonTech">
-        <img src="assets/brand/favicon.jpeg" alt="Logo SalonTech" class="brand-logo" />
+        <img src="assets/brand/favicon.jpeg" alt="Logo SalonTech" class="brand-logo">
         <span>Salon<span class="gradient-text">Tech</span></span>
       </a>
 
       <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" aria-controls="navLinks" aria-expanded="false" aria-label="Abrir menu de navegação">☰</button>
 
-      <nav>
+      <nav aria-label="Navegação principal">
         <ul class="nav-links" id="navLinks">
           <li><a href="#painel" data-open-module="clients">Clientes</a></li>
           <li><a href="#painel" data-open-module="appointments">Agendamentos</a></li>
@@ -212,17 +219,17 @@
       <div class="container workflow-grid">
         <article>
           <span>01</span>
-          <strong>Cadastre clientes</strong>
+          <h2>Cadastre clientes</h2>
           <p>Mantenha contatos e dados básicos organizados para agilizar o atendimento.</p>
         </article>
         <article>
           <span>02</span>
-          <strong>Escolha serviços</strong>
+          <h2>Escolha serviços</h2>
           <p>Use o catálogo interno para consultar valores, duração e categoria.</p>
         </article>
         <article>
           <span>03</span>
-          <strong>Monte a agenda</strong>
+          <h2>Monte a agenda</h2>
           <p>Registre horários e acompanhe os próximos atendimentos no painel.</p>
         </article>
       </div>
@@ -277,7 +284,7 @@
         <form class="filters" id="filtersForm" aria-label="Filtros de busca de serviços">
           <div class="field">
             <label for="searchInput">Buscar serviço</label>
-            <input id="searchInput" type="search" placeholder="Ex: corte, pele ou unhas" autocomplete="off" />
+            <input id="searchInput" type="search" placeholder="Ex: corte, pele ou unhas" autocomplete="off">
           </div>
           <div class="field">
             <label for="categoryFilter">Categoria</label>
@@ -314,7 +321,7 @@
   <footer class="site-footer">
     <div class="container footer-grid">
       <div class="footer-brand">
-        <img src="assets/brand/favicon.jpeg" alt="" class="footer-logo" aria-hidden="true" />
+        <img src="assets/brand/favicon.jpeg" alt="" class="footer-logo" aria-hidden="true">
         <div>
           <strong>SalonTech</strong>
           <p>Sistema interno para cadastro, agenda e catálogo do salão.</p>
