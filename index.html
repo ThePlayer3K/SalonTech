@@ -3,24 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="SalonTech: sistema interno para organizar clientes, agenda, equipe, serviços e catálogo do salão." />
   <title>SalonTech | Sistema do Salão</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body class="auth-locked">
 
-  <section class="auth-shell" id="authScreen">
+  <div class="offline-screen" id="offlineScreen" hidden>
+    <div class="offline-content">
+      <div class="offline-icon">✂️🔌</div>
+      <h2>Erro 404: Conexão cortada!</h2>
+      <p>Parece que alguém tropeçou no cabo do secador e a internet caiu. Verifique sua conexão para voltar ao trabalho.</p>
+    </div>
+  </div>
+
+  <div class="splash-screen" id="splashScreen">
+    <div class="splash-logo">
+      <span class="splash-text">Salon<span class="gradient-text">Tech</span></span>
+    </div>
+  </div>
+
+  <section class="auth-shell" id="authScreen" aria-labelledby="authTitle">
     <div class="auth-panel">
-      <a class="auth-brand" href="#inicio">
+      <a class="auth-brand" href="#inicio" aria-label="SalonTech">
         <span>Salon<span class="gradient-text">Tech</span></span>
       </a>
       <div class="auth-copy">
         <span class="section-kicker">Acesso interno</span>
-        <h1>Entrar no sistema</h1>
+        <h1 id="authTitle">Entrar no sistema</h1>
         <p>Gestão de clientes, agenda, equipe, serviços e produtos do salão.</p>
       </div>
-      <div class="auth-tabs" role="tablist">
-        <button class="active" type="button" data-auth-mode="login" role="tab">Entrar</button>
-        <button type="button" data-auth-mode="register" role="tab">Cadastrar</button>
+      <div class="auth-tabs" role="tablist" aria-label="Entrar ou criar conta">
+        <button class="active" type="button" data-auth-mode="login" role="tab" aria-selected="true">Entrar</button>
+        <button type="button" data-auth-mode="register" role="tab" aria-selected="false">Cadastrar</button>
       </div>
       <form class="auth-form" id="loginForm" data-auth-form="login">
         <div class="field">
@@ -38,10 +53,10 @@
       <form class="auth-form" id="forgotPasswordForm" data-auth-form="forgot-password" hidden>
         <div class="field">
           <label for="forgotPasswordEmail">E-mail da conta</label>
-          <input id="forgotPasswordEmail" type="email" required placeholder="voce@email.com" />
+          <input id="forgotPasswordEmail" type="email" required autocomplete="email" placeholder="voce@email.com" />
         </div>
         <div class="field">
-          <label for="forgotPasswordCpf">CPF associado</label>
+          <label for="forgotPasswordCpf">CPF associado à conta</label>
           <input id="forgotPasswordCpf" required inputmode="numeric" maxlength="14" placeholder="000.000.000-00" />
         </div>
         <button class="btn btn-primary" type="submit">Enviar link de recuperação</button>
@@ -50,11 +65,11 @@
       <form class="auth-form" id="resetPasswordForm" data-auth-form="reset-password" hidden>
         <div class="field">
           <label for="resetNewPassword">Nova senha</label>
-          <input id="resetNewPassword" type="password" minlength="6" required placeholder="Crie uma nova senha" />
+          <input id="resetNewPassword" type="password" minlength="6" required autocomplete="new-password" placeholder="Crie uma nova senha" />
         </div>
         <div class="field">
           <label for="resetConfirmPassword">Confirmar nova senha</label>
-          <input id="resetConfirmPassword" type="password" minlength="6" required placeholder="Confirme a nova senha" />
+          <input id="resetConfirmPassword" type="password" minlength="6" required autocomplete="new-password" placeholder="Confirme a nova senha" />
         </div>
         <button class="btn btn-primary" type="submit">Redefinir senha</button>
       </form>
@@ -73,7 +88,7 @@
         </div>
         <div class="field">
           <label for="registerPassword">Senha</label>
-          <input id="registerPassword" type="password" minlength="6" required placeholder="Crie uma senha" />
+          <input id="registerPassword" type="password" minlength="6" required autocomplete="new-password" placeholder="Crie uma senha" />
         </div>
         <div class="field">
           <label for="registerRole">Perfil de acesso</label>
@@ -89,10 +104,14 @@
     </div>
   </section>
 
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
   <header class="app-header">
     <div class="container navbar">
-      <a class="brand" href="#inicio"><span>Salon<span class="gradient-text">Tech</span></span></a>
-      <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" aria-expanded="false">☰</button>
+      <a class="brand" href="#inicio" aria-label="Página inicial do SalonTech">
+        <span>Salon<span class="gradient-text">Tech</span></span>
+      </a>
+      <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" aria-controls="navLinks" aria-expanded="false" aria-label="Abrir menu">☰</button>
       <nav>
         <ul class="nav-links" id="navLinks">
           <li><a href="#painel" data-open-module="clients">Clientes</a></li>
@@ -106,6 +125,7 @@
         </ul>
       </nav>
       <div class="nav-controls">
+        <button class="nav-action" id="themeToggle" type="button" aria-label="Alternar tema">◐</button>
         <button class="nav-logout" id="logoutBtn" type="button">Sair</button>
       </div>
     </div>
@@ -113,10 +133,11 @@
 
   <main id="conteudo">
     <section class="hero" id="inicio">
+      <div class="hero-overlay"></div>
       <div class="container hero-content">
         <span class="eyebrow">Sistema interno | SalonTech</span>
         <h1>Gestão do salão sem complicação</h1>
-        <p>Centralize clientes, agenda, equipe e serviços em um só lugar.</p>
+        <p>Centralize clientes, agenda, equipe e serviços em uma interface direta para o atendente.</p>
         <div class="hero-actions">
           <a class="btn btn-primary" href="#painel">Abrir painel</a>
           <a class="btn btn-secondary" href="#servicos">Ver serviços</a>
@@ -124,7 +145,7 @@
       </div>
     </section>
 
-    <section class="workflow-band">
+    <section class="workflow-band" aria-label="Fluxo de trabalho">
       <div class="container workflow-grid">
         <article><span>01</span><strong>Cadastre clientes</strong><p>Dados organizados para agilizar o atendimento.</p></article>
         <article><span>02</span><strong>Escolha serviços</strong><p>Consulte valores e duração no catálogo.</p></article>
@@ -132,14 +153,14 @@
       </div>
     </section>
 
-    <section class="management-section" id="painel">
+    <section class="management-section" id="painel" aria-labelledby="painelTitulo">
       <div class="container">
         <div class="section-header">
           <div>
             <span class="section-kicker">Painel do atendente</span>
-            <h2>Painel unificado</h2>
+            <h2 id="painelTitulo">Painel unificado</h2>
           </div>
-          <p>Gerencie clientes, agenda, serviços, despesas e o relatório financeiro em um só lugar.</p>
+          <p>Gerencie clientes, agenda, serviços, despesas e o relatório financeiro.</p>
         </div>
         <div class="dashboard-shell">
           <div class="dashboard-tabs" id="adminTabs" role="tablist" aria-label="Módulos de cadastro"></div>
@@ -164,12 +185,12 @@
       </div>
     </section>
 
-    <section id="servicos">
+    <section id="servicos" aria-labelledby="servicosTitulo">
       <div class="container">
         <div class="section-header">
           <div>
             <span class="section-kicker">Catálogo interno</span>
-            <h2>Serviços disponíveis</h2>
+            <h2 id="servicosTitulo">Serviços disponíveis</h2>
           </div>
           <p>Consulte os serviços e envie o item escolhido diretamente para a agenda.</p>
         </div>
@@ -206,39 +227,6 @@
         <div class="service-grid" id="servicesGrid" aria-live="polite"></div>
       </div>
     </section>
-
-    <section id="contato">
-      <div class="container">
-        <div class="section-header"><div><span class="section-kicker">Fale conosco</span><h2>Entre em contato</h2></div></div>
-        <form class="form-card" id="contactForm" style="max-width:560px">
-          <div class="form-grid">
-            <div class="field"><label for="contactName">Nome</label><input id="contactName" name="name" required /></div>
-            <div class="field"><label for="contactService">Serviço</label><select id="contactService" name="service"><option value="">Selecione</option></select></div>
-            <div class="field"><label for="contactMessage">Mensagem</label><textarea id="contactMessage" name="message" rows="4"></textarea></div>
-          </div>
-          <div class="form-actions"><button class="btn btn-primary" type="submit">Enviar</button></div>
-        </form>
-      </div>
-    </section>
-
-    <section id="avaliacoes">
-      <div class="container">
-        <div class="section-header">
-          <div><span class="section-kicker">Opinião dos clientes</span><h2>Avaliações</h2></div>
-          <div><span id="avgOverallScore">0.0</span> — <span id="avgStars">-----</span> (<span id="totalReviewsCount">0 avaliações</span>)</div>
-        </div>
-        <form class="form-card" id="reviewForm" style="max-width:480px; margin-bottom:32px">
-          <div class="form-grid">
-            <div class="field"><label for="reviewName">Nome</label><input id="reviewName" name="name" required /></div>
-            <div class="field"><label for="reviewService">Serviço</label><select id="reviewService" name="service"><option value="">Selecione</option></select></div>
-            <div class="field"><label>Nota</label><div id="ratingButtons" role="radiogroup"></div><span id="ratingMeaning">Selecione uma nota</span><input type="hidden" id="reviewRating" name="rating" /></div>
-            <div class="field"><label for="reviewComment">Comentário</label><textarea id="reviewComment" name="comment" rows="3"></textarea></div>
-          </div>
-          <div class="form-actions"><button class="btn btn-primary" type="submit">Enviar avaliação</button></div>
-        </form>
-        <div id="reviewsList"></div>
-      </div>
-    </section>
   </main>
 
   <footer class="site-footer">
@@ -247,6 +235,8 @@
       <div class="footer-links"><a href="#inicio">Topo</a></div>
     </div>
   </footer>
+
+  <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
 
   <script type="module" src="js/script.js"></script>
 </body>

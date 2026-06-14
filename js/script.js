@@ -35,60 +35,46 @@ const tableByStoreKey = { clients:"cliente", appointments:"agendamento", service
 
 let currentAdminModule = "clients";
 let editingRecordId = null;
-let selectedRating = 0;
 
-function buildStars(rating) { const n=Math.max(0,Math.min(5,Math.round(Number(rating||0)))); return "★".repeat(n)+"☆".repeat(5-n); }
-function createId(prefix) { return `${prefix||"id"}_${Date.now()}_${Math.random().toString(36).slice(2,7)}`; }
-function saveStore(store) { appStore=store; storage.set(STORAGE_KEY,{ reviews:store.reviews||[], contactRequests:store.contactRequests||[] }); }
+// ─── UX: splash, theme, offline, toast, scroll progress, navigation ──────────
 
-// ─── Reviews ─────────────────────────────────────────────────────────────────
-
-function setupReviews() {
-    if (!$("#reviewForm") && !$("#reviewsList")) return;
-    renderRatingButtons(); renderReviews();
-    $("#reviewForm")?.addEventListener("submit", (event) => {
-        event.preventDefault();
-        if (!selectedRating) { showToast("Selecione uma nota para enviar a avaliação."); return; }
-        const review = { id:createId("rev"), name:$("#reviewName").value.trim(), service:$("#reviewService").value, rating:selectedRating, comment:$("#reviewComment").value.trim(), createdAt:new Date().toISOString() };
-        const store = { ...appStore, reviews:[review, ...appStore.reviews] };
-        saveStore(store); event.target.reset(); setRating(0); renderReviews();
-        showToast("Avaliação registrada. Obrigado!");
-    });
+function setupSplash() {
+    const splash = $("#splashScreen"); if (!splash) return;
+    setTimeout(() => splash.classList.add("splash-hidden"), 800);
+    splash.addEventListener("transitionend", () => splash.remove());
 }
 
-function renderRatingButtons() {
-    const group=$("#ratingButtons"); if (!group) return;
-    group.innerHTML=[1,2,3,4,5].map((n)=>`<button class="star-btn" type="button" role="radio" aria-checked="false" aria-label="${n} estrelas" data-rating="${n}">★</button>`).join("");
-    group.querySelectorAll("[data-rating]").forEach((btn)=>btn.addEventListener("click",()=>setRating(Number(btn.dataset.rating))));
+function setupTheme() {
+    const saved = localStorage.getItem("salonTechTheme") || "light";
+    applyTheme(saved);
+    $("#themeToggle")?.addEventListener("click", () => { const next = document.body.dataset.theme === "dark" ? "light" : "dark"; localStorage.setItem("salonTechTheme", next); applyTheme(next); });
 }
 
-function setRating(value) {
-    selectedRating=value; if ($("#reviewRating")) $("#reviewRating").value=value||""; if ($("#ratingMeaning")) $("#ratingMeaning").textContent=value?`${value} de 5`:"Selecione uma nota";
-    document.querySelectorAll("[data-rating]").forEach((btn)=>{ const isActive=Number(btn.dataset.rating)<=value; btn.classList.toggle("active",isActive); btn.setAttribute("aria-checked",String(Number(btn.dataset.rating)===value)); });
+function applyTheme(theme) {
+    document.body.dataset.theme = theme;
+    const btn = $("#themeToggle"); if (btn) btn.setAttribute("aria-label", theme === "dark" ? "Ativar tema claro" : "Ativar tema escuro");
 }
 
-function renderReviews() {
-    const reviews=appStore.reviews; const total=reviews.length; const average=total?reviews.reduce((s,r)=>s+Number(r.rating||0),0)/total:0;
-    if ($("#avgOverallScore")) $("#avgOverallScore").textContent=average.toFixed(1);
-    if ($("#totalReviewsCount")) $("#totalReviewsCount").textContent=`${total} ${total===1?"avaliação":"avaliações"}`;
-    if ($("#avgStars")) $("#avgStars").textContent=buildStars(Math.round(average));
-    const list=$("#reviewsList"); if (!list) return;
-    if (!reviews.length) { list.innerHTML=`<p class="empty-state">Ainda não há avaliações cadastradas.</p>`; return; }
-    list.innerHTML=reviews.slice(0,5).map((r)=>`<article class="review-card"><header><span><strong>${escapeHtml(r.name)}</strong><small>${escapeHtml(r.service)}</small></span><span class="review-stars" aria-label="${r.rating} de 5 estrelas">${buildStars(r.rating)}</span></header><p>${escapeHtml(r.comment)}</p></article>`).join("");
+function setupOfflineHandler() {
+    const screen = $("#offlineScreen");
+    const update = () => { if (screen) screen.hidden = navigator.onLine; };
+    window.addEventListener("online", update); window.addEventListener("offline", update); update();
 }
 
-// ─── Contact ─────────────────────────────────────────────────────────────────
+function updateScrollProgress() {
+    const bar = $("#scrollProgress");
+    if (!bar) return;
+    window.addEventListener("scroll", () => { const h = document.documentElement; bar.style.width = `${(h.scrollTop/(h.scrollHeight-h.clientHeight))*100}%`; }, { passive:true });
+}
 
-function setupContact() {
-    $("#contactForm")?.addEventListener("submit", (event) => {
-        event.preventDefault();
-        const request = { id:createId("contact"), ...Object.fromEntries(new FormData(event.target).entries()), createdAt:new Date().toISOString() };
-        const store = { ...appStore, contactRequests:[request, ...appStore.contactRequests] };
-        saveStore(store); event.target.reset(); showToast("Solicitação enviada para o atendente.");
-    });
+function setupNavigation(openModuleFn) {
+    const menuBtn = $("#mobileMenuBtn"); const navLinks = $("#navLinks");
+    menuBtn?.addEventListener("click", () => { const open = navLinks?.classList.toggle("open"); menuBtn.setAttribute("aria-expanded", String(!!open)); });
+    document.querySelectorAll("[data-open-module]").forEach((a) => a.addEventListener("click", () => { openModuleFn(a.dataset.openModule); navLinks?.classList.remove("open"); menuBtn?.setAttribute("aria-expanded","false"); }));
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+    setupSplash(); setupTheme(); setupOfflineHandler(); updateScrollProgress(); setupNavigation(openAdminModule);
     try {
         await loadStoreFromSupabase();
         if (appStore.expenses.some((e) => /^Comissao agendamento #\d+$/.test(e.nome))) {
@@ -139,7 +125,12 @@ function escapeHtml(text) { return String(text||"").replace(/&/g,"&amp;").replac
 function todayISO() { return new Date().toISOString().slice(0,10); }
 function monthStartISO() { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-01`; }
 function displayValue(storeKey, id) { if(!id) return "Nao informado"; const r=(appStore[storeKey]||[]).find((x)=>x.id===String(id)); return r?.nome||r?.name||String(id); }
-function showToast(msg) { alert(msg); }
+function showToast(msg, type = "") {
+    const region = $("#toastRegion"); if (!region) return;
+    const toast = document.createElement("div"); toast.className = `toast${type?` toast-${type}`:""}`;
+    toast.setAttribute("role", "status"); toast.textContent = msg;
+    region.appendChild(toast); setTimeout(() => toast.remove(), 3500);
+}
 
 // ─── Finances ─────────────────────────────────────────────────────────────────
 
@@ -328,7 +319,7 @@ async function handleResetPassword(event) { event.preventDefault(); const passwo
 async function startGoogleOAuth() { const { error }=await supabase.auth.signInWithOAuth({ provider:"google",options:{ redirectTo:`${DEFAULT_ORIGIN}/` } }); if (error) setAuthStatus(error.message,"error"); }
 async function handleLogout() { await supabase.auth.signOut(); lockApp(); }
 function lockApp() { localStorage.removeItem("salonTechSession"); document.body.classList.add("auth-locked"); }
-function unlockApp(showMsg) { document.body.classList.remove("auth-locked"); setupAdmin(); setupServices(); setupReviews(); setupContact(); if (showMsg) console.log("Sessão iniciada."); }
+function unlockApp(showMsg) { document.body.classList.remove("auth-locked"); setupAdmin(); setupServices(); if (showMsg) showToast("Bem-vindo ao SalonTech!", "success"); }
 function setAuthMode(mode) { document.querySelectorAll("[data-auth-mode]").forEach((b)=>{ b.classList.toggle("active",b.dataset.authMode===mode); b.setAttribute("aria-selected",String(b.dataset.authMode===mode)); }); document.querySelectorAll("[data-auth-form]").forEach((f)=>{ f.hidden=f.dataset.authForm!==mode; }); setAuthStatus(""); }
 function setResetMode(mode) { document.querySelectorAll("[data-auth-mode]").forEach((b)=>b.classList.toggle("active",b.dataset.authMode==="login"&&mode==="login")); document.querySelectorAll("[data-auth-form]").forEach((f)=>{ f.hidden=f.dataset.authForm!==mode; }); setAuthStatus(""); }
 function setAuthStatus(msg,type="") { const s=$("#authStatus"); if(!s) return; s.textContent=msg; s.className=`auth-status ${type}`.trim(); }
